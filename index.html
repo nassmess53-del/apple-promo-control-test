@@ -4,183 +4,395 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-        content="width=device-width, initial-scale=1">
+        content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Apple Promo Control Test</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <style>
+    :root {
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --line: #e5e5e8;
+      --blue: #0071e3;
+      --green: #248a46;
+      --red: #d12c36;
+      --orange: #a75c00;
+    }
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
-      padding: 14px;
-      background: #f7f7f8;
-      color: #171717;
+      background: var(--bg);
+      color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont,
                    "Segoe UI", Arial, sans-serif;
+      font-size: 16px;
     }
-
-    .container {
-      max-width: 680px;
-      margin: auto;
-      padding: 18px;
-      background: #fff;
-      border: 1px solid #e5e5e5;
-      border-radius: 20px;
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 18px 14px 40px;
     }
-
-    .header {
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px 18px;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-size: 29px;
+      margin: 0 0 5px;
+      letter-spacing: -.5px;
+    }
+    h2 { font-size: 21px; margin: 0 0 15px; }
+    h3 { font-size: 18px; margin: 0 0 8px; }
+    p { line-height: 1.5; }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+    .hidden { display: none !important; }
+    .top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 10px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid #eee;
     }
-
-    h1 { font-size: 21px; margin: 0 0 5px; }
-    h2 { font-size: 19px; margin: 26px 0 14px; }
-
-    .subtitle, .price, .hint {
-      color: #686868;
+    label.field {
+      display: block;
+      font-weight: 650;
+      margin: 22px 0 9px;
     }
-
-    .subtitle { font-size: 15px; }
-    .price { margin: 8px 0 12px; }
-    .hint { font-size: 13px; margin-top: 12px; }
-
-    button, select {
+    select, button {
       font: inherit;
-      border-radius: 12px;
     }
-
-    button {
-      padding: 10px 14px;
-      border: 1px solid #d5d5d5;
-      background: white;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .refresh { white-space: nowrap; }
-
-    .primary {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      margin-top: 20px;
-      background: #171717;
-      color: white;
-      border-color: #171717;
-    }
-
-    .field {
-      display: block;
-      font-weight: 600;
-      margin: 20px 0 8px;
-    }
-
     select {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      background: white;
+      padding: 15px 13px;
+      border: 1px solid #d5d5d9;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--text);
+      min-height: 54px;
     }
-
-    .product {
-      padding-bottom: 20px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .product-name {
-      font-size: 17px;
+    select:disabled { opacity: .55; }
+    button {
+      border: 0;
+      border-radius: 14px;
+      min-height: 49px;
+      padding: 12px 16px;
+      cursor: pointer;
       font-weight: 600;
     }
-
+    button:disabled {
+      opacity: .48;
+      cursor: not-allowed;
+    }
+    .primary {
+      background: var(--blue);
+      color: white;
+    }
+    .secondary {
+      background: #ededf0;
+      color: var(--text);
+    }
+    .danger {
+      background: var(--red);
+      color: white;
+    }
+    .full {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 20px;
+    }
+    .actions button { flex: 1; }
+    .category {
+      font-size: 21px;
+      font-weight: 700;
+      padding: 16px 0 6px;
+      border-bottom: 1px solid var(--line);
+    }
+    .item {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .item:last-child { border-bottom: 0; }
+    .price {
+      color: var(--muted);
+      margin: 8px 0 13px;
+    }
     .choice {
       display: flex;
-      gap: 10px;
-      align-items: center;
-      padding: 8px 0;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 11px 0;
       cursor: pointer;
+      line-height: 1.35;
     }
-
     .choice input {
-      width: 20px;
-      height: 20px;
-      accent-color: #171717;
+      width: 21px;
+      height: 21px;
+      margin: 0;
+      flex: none;
+      accent-color: var(--blue);
     }
-
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .metric {
+      padding: 14px;
+      background: var(--bg);
+      border-radius: 13px;
+    }
+    .metric strong {
+      display: block;
+      font-size: 26px;
+      margin-bottom: 4px;
+    }
+    .metric span {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .status-ok { color: var(--green); }
+    .status-no { color: var(--red); }
+    .status-missing { color: var(--orange); }
+    .review-row {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .review-row:last-child { border-bottom: 0; }
+    .review-row strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+    .review-row span { font-size: 14px; }
+    .history-row {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 15px;
+      margin: 12px 0;
+    }
+    .history-row p { margin: 6px 0; }
     .message {
       margin-top: 16px;
       font-size: 14px;
-      color: #555;
+      line-height: 1.5;
     }
-
-    .error { color: #bd2828; }
-    .hidden { display: none; }
+    .error { color: var(--red); }
+    .success { color: var(--green); }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin: 15px 0;
+    }
+    .toolbar button { flex: 1; }
+    .link-button {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      background: #ededf0;
+      color: var(--text);
+      padding: 15px;
+      border-radius: 14px;
+      font-weight: 650;
+      margin-top: 10px;
+    }
+    .spinner { opacity: .7; }
+    @media (max-width: 380px) {
+      .panel { padding: 18px 14px; }
+      h1 { font-size: 25px; }
+      button { font-size: 14px; }
+    }
   </style>
 </head>
-
 <body>
-  <main class="container">
+  <main class="wrap">
 
-    <div class="header">
-      <div>
-        <h1>Актуальні промо</h1>
-        <div class="subtitle" id="storeTitle">
-          Apple Promo Control Test
+    <section class="panel">
+      <div class="top">
+        <div>
+          <h1>Актуальні промо</h1>
+          <div class="muted">Apple Promo Control Test</div>
         </div>
+        <button id="refreshBtn"
+                class="secondary"
+                type="button">
+          ↻ Оновити
+        </button>
       </div>
+      <p id="globalStatus"
+         class="message muted"
+         aria-live="polite">
+        Завантаження...
+      </p>
+    </section>
 
-      <button class="refresh" id="refreshBtn"
-              disabled onclick="loadPromos()">
-        ↻ Оновити
-      </button>
-    </div>
+    <section id="selectionView" class="panel">
+      <h2>Нова перевірка</h2>
 
-    <section id="setup">
-      <label class="field" for="employee">
+      <label class="field" for="employeeSelect">
         Співробітник
       </label>
-
-      <select id="employee">
+      <select id="employeeSelect" disabled>
         <option value="">Оберіть співробітника</option>
       </select>
 
-      <label class="field" for="store">
+      <label class="field" for="storeSelect">
         Магазин
       </label>
-
-      <select id="store" disabled>
+      <select id="storeSelect" disabled>
         <option value="">Оберіть магазин</option>
       </select>
 
-      <button class="primary" id="startBtn"
-              disabled onclick="loadPromos()">
+      <button id="startBtn"
+              class="primary full"
+              type="button"
+              disabled>
         Ознайомитися з актуальними промо
+      </button>
+
+      <button id="openHistoryBtn"
+              class="secondary full"
+              type="button">
+        Історія звітів
       </button>
     </section>
 
-    <div id="message" class="message"
-         role="status"></div>
+    <section id="checklistView"
+             class="panel hidden">
+      <h2>Перевірка промо</h2>
+      <p id="checklistInfo" class="muted"></p>
 
-    <section id="checklist" class="hidden">
-      <div id="categories"></div>
+      <div id="checklistContent"></div>
 
-      <button class="primary" id="saveBtn" disabled>
-        Зберегти перевірку
+      <div class="actions">
+        <button id="backToSelectionBtn"
+                class="secondary"
+                type="button">
+          Назад
+        </button>
+        <button id="reviewBtn"
+                class="primary"
+                type="button">
+          Переглянути результати
+        </button>
+      </div>
+    </section>
+
+    <section id="reviewView"
+             class="panel hidden">
+      <h2>Перегляд перед надсиланням</h2>
+      <p class="muted">
+        Перевірте відповіді. Після остаточного
+        надсилання редагування буде недоступне.
+      </p>
+
+      <div id="reviewInfo"></div>
+      <div id="reviewSummary" class="summary"></div>
+      <div id="reviewContent"></div>
+
+      <div class="actions">
+        <button id="backToChecklistBtn"
+                class="secondary"
+                type="button">
+          Повернутися
+        </button>
+        <button id="submitBtn"
+                class="primary"
+                type="button">
+          Надіслати звіт
+        </button>
+      </div>
+      <p id="submitStatus"
+         class="message"
+         aria-live="polite"></p>
+    </section>
+
+    <section id="successView"
+             class="panel hidden">
+      <h2 class="status-ok">
+        ✓ Звіт успішно надіслано
+      </h2>
+      <p>
+        Результати збережено. Змінити цей звіт
+        більше не можна.
+      </p>
+
+      <div id="successSummary"></div>
+
+      <a id="spreadsheetLink"
+         class="link-button hidden"
+         href="#"
+         target="_blank"
+         rel="noopener noreferrer">
+        Переглянути в Google Таблиці
+      </a>
+
+      <a id="documentLink"
+         class="link-button hidden"
+         href="#"
+         target="_blank"
+         rel="noopener noreferrer">
+        Відкрити Google Docs
+      </a>
+
+      <button id="newReportBtn"
+              class="primary full"
+              type="button">
+        Створити новий звіт
       </button>
 
-      <p class="hint">
-        Збереження звітів підключимо після
-        перевірки завантаження промо.
+      <button id="successHistoryBtn"
+              class="secondary full"
+              type="button">
+        Історія звітів
+      </button>
+    </section>
+
+    <section id="historyView"
+             class="panel hidden">
+      <h2>Історія звітів</h2>
+      <p class="muted small">
+        Завершені перевірки доступні лише
+        для перегляду.
       </p>
+
+      <div class="toolbar">
+        <button id="historyAllBtn"
+                class="secondary"
+                type="button">
+          Усі звіти
+        </button>
+        <button id="historyStoreBtn"
+                class="secondary"
+                type="button">
+          Цей магазин
+        </button>
+      </div>
+
+      <div id="historyContent"></div>
+
+      <a id="historySpreadsheetLink"
+         class="link-button hidden"
+         href="#"
+         target="_blank"
+         rel="noopener noreferrer">
+        Відкрити Google Таблицю
+      </a>
+
+      <button id="historyBackBtn"
+              class="secondary full"
+              type="button">
+        Назад
+      </button>
     </section>
 
   </main>
@@ -191,9 +403,18 @@
     const API_URL =
       "https://apple-promo-control-test.nass-mess53.workers.dev";
 
-    const telegram = window.Telegram?.WebApp;
-    telegram?.ready();
-    telegram?.expand();
+    const telegram = window.Telegram?.WebApp || null;
+
+    if (telegram) {
+      telegram.ready();
+      telegram.expand();
+    }
+
+    const ANSWER_LABELS = {
+      ok: "Оформлено, відповідає промо",
+      no: "Не оформлено",
+      missing: "Товар відсутній у магазині"
+    };
 
     const state = {
       stores: [],
@@ -201,50 +422,106 @@
       employee: "",
       apid: "",
       categories: [],
-      answers: {}
+      answers: {},
+      reportId: "",
+      submitting: false,
+      completed: false,
+      historyReturn: "selectionView"
     };
 
-    const el = id => document.getElementById(id);
+    const $ = id => document.getElementById(id);
 
-    function showMessage(text, error = false) {
-      el("message").textContent = text;
-      el("message").className =
-        "message" + (error ? " error" : "");
+    function showView(id) {
+      [
+        "selectionView",
+        "checklistView",
+        "reviewView",
+        "successView",
+        "historyView"
+      ].forEach(view => {
+        $(view).classList.toggle(
+          "hidden",
+          view !== id
+        );
+      });
+
+      window.scrollTo(0, 0);
     }
 
-    function createOption(value, text) {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = text;
-      return option;
+    function setStatus(message, error = false) {
+      $("globalStatus").textContent = message;
+      $("globalStatus").className =
+        "message " + (error ? "error" : "muted");
     }
 
-    async function request(path, payload = {}) {
-      const response = await fetch(
-        API_URL.replace(/\/$/, "") + path,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            initData: telegram?.initData || "",
-            ...payload
-          })
-        }
+    function el(tag, text, className = "") {
+      const node = document.createElement(tag);
+
+      if (text !== undefined && text !== null) {
+        node.textContent = String(text);
+      }
+
+      if (className) {
+        node.className = className;
+      }
+
+      return node;
+    }
+
+    function appendText(parent, tag, text, className = "") {
+      const node = el(tag, text, className);
+      parent.appendChild(node);
+      return node;
+    }
+
+    function currentStore() {
+      return state.stores.find(
+        store => String(store.apid) === state.apid
       );
+    }
+
+    function allItems() {
+      return state.categories.flatMap(
+        category => category.items || []
+      );
+    }
+
+    function newReportId() {
+      if (crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+
+      return Array.from(bytes)
+        .map(value => value.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    async function api(path, payload = {}) {
+      const response = await fetch(API_URL + path, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ...payload,
+          initData: telegram?.initData || ""
+        })
+      });
 
       let result;
 
       try {
         result = await response.json();
-      } catch (error) {
+      } catch {
         throw new Error(
-          "Сервер повернув некоректну відповідь."
+          "Сервер повернув некоректну відповідь"
         );
       }
 
-      if (!response.ok || result.ok === false || result.error) {
+      if (!response.ok || !result.ok) {
         throw new Error(
           result.error || "Помилка сервера"
         );
@@ -253,251 +530,599 @@
       return result;
     }
 
-    async function loadStores() {
-      try {
-        showMessage("Завантаження співробітників і магазинів...");
+    function fillSelect(select, placeholder, items, mapper) {
+      select.replaceChildren(
+        new Option(placeholder, "")
+      );
 
-        const result = await request("/stores");
+      items.forEach(item => {
+        const option = mapper(item);
 
-        if (!Array.isArray(result.stores)) {
-          throw new Error("Некоректний довідник магазинів");
-        }
-
-        state.stores = result.stores;
-
-        const employees = Array.isArray(result.employees)
-          ? result.employees
-          : state.stores.map(store => store.employee);
-
-        state.employees = [...new Set(
-          employees
-            .map(name => String(name || "").trim())
-            .filter(Boolean)
-        )].sort((a, b) => a.localeCompare(b, "uk"));
-
-        const select = el("employee");
-
-        select.replaceChildren(
-          createOption("", "Оберіть співробітника")
+        select.add(
+          new Option(option.label, option.value)
         );
-
-        state.employees.forEach(name => {
-          select.appendChild(
-            createOption(name, name)
-          );
-        });
-
-        const storeCount = new Set(
-          state.stores.map(store => String(store.apid))
-        ).size;
-
-        showMessage(
-          "Завантажено співробітників: " +
-          state.employees.length +
-          ". Магазинів: " + storeCount + "."
-        );
-
-      } catch (error) {
-        showMessage(error.message, true);
-      }
+      });
     }
 
-    el("employee").addEventListener(
-      "change",
-      function () {
-        state.employee = this.value;
-        state.apid = "";
+    function updateSelection() {
+      state.employee = $("employeeSelect").value;
+      state.apid = $("storeSelect").value;
 
-        const select = el("store");
+      $("storeSelect").disabled = !state.employee;
 
-        select.replaceChildren(
-          createOption("", "Оберіть магазин")
-        );
+      $("startBtn").disabled =
+        !state.employee ||
+        !state.apid ||
+        !state.categories.length;
+    }
 
-        const uniqueStores = new Map();
+    async function loadDirectory() {
+      const result = await api("/stores");
 
-        state.stores.forEach(store => {
-          const apid = String(store.apid || "").trim();
+      const uniqueStores = new Map();
 
-          if (apid && !uniqueStores.has(apid)) {
-            uniqueStores.set(apid, store);
-          }
-        });
+      (result.stores || []).forEach(store => {
+        const apid = String(store.apid || "").trim();
 
-        [...uniqueStores.values()]
-          .sort((a, b) =>
-            a.name.localeCompare(b.name, "uk")
-          )
-          .forEach(store => {
-            select.appendChild(
-              createOption(
-                String(store.apid),
-                store.name
-              )
-            );
+        if (apid && !uniqueStores.has(apid)) {
+          uniqueStores.set(apid, {
+            ...store,
+            apid
           });
+        }
+      });
 
-        select.disabled = !state.employee;
-        el("startBtn").disabled = true;
-      }
-    );
+      state.stores = [...uniqueStores.values()];
 
-    el("store").addEventListener(
-      "change",
-      function () {
-        state.apid = this.value;
-        el("startBtn").disabled =
-          !state.apid || !state.employee;
+      state.employees = [
+        ...new Set(
+          (result.employees || [])
+            .map(name => String(name).trim())
+            .filter(Boolean)
+        )
+      ].sort((a, b) => a.localeCompare(b, "uk"));
+
+      fillSelect(
+        $("employeeSelect"),
+        "Оберіть співробітника",
+        state.employees,
+        name => ({
+          label: name,
+          value: name
+        })
+      );
+
+      fillSelect(
+        $("storeSelect"),
+        "Оберіть магазин",
+        state.stores,
+        store => ({
+          label: `${store.name} | ${store.apid}`,
+          value: store.apid
+        })
+      );
+
+      $("employeeSelect").disabled = false;
+
+      if (state.employees.includes(state.employee)) {
+        $("employeeSelect").value = state.employee;
       }
-    );
+
+      if (state.stores.some(
+        store => store.apid === state.apid
+      )) {
+        $("storeSelect").value = state.apid;
+      }
+
+      updateSelection();
+    }
 
     async function loadPromos() {
-      if (!state.apid || !state.employee) return;
+      const result = await api("/promos");
 
-      el("refreshBtn").disabled = true;
-      el("startBtn").disabled = true;
+      if (!Array.isArray(result.categories)) {
+        throw new Error("Невірний формат промопозицій");
+      }
+
+      state.categories = result.categories;
+
+      const validIds = new Set(
+        allItems().map(item => String(item.id))
+      );
+
+      Object.keys(state.answers).forEach(id => {
+        if (!validIds.has(id)) {
+          delete state.answers[id];
+        }
+      });
+
+      updateSelection();
+    }
+
+    async function refreshData() {
+      $("refreshBtn").disabled = true;
+      setStatus("Завантаження даних...");
 
       try {
-        showMessage("Завантаження актуальних промо...");
+        await loadDirectory();
+        await loadPromos();
 
-        const result = await request(
-          "/promos",
-          {
-            apid: state.apid,
-            employee: state.employee
-          }
+        setStatus(
+          `Завантажено співробітників: ${state.employees.length}. ` +
+          `Магазинів: ${state.stores.length}. ` +
+          `Промопозицій: ${allItems().length}.`
         );
 
-        if (!Array.isArray(result.categories)) {
-          throw new Error("Некоректний список промо");
+        if (!$("checklistView").classList.contains("hidden")) {
+          renderChecklist();
         }
 
-        state.categories = result.categories;
-
-        const currentIds = new Set(
-          state.categories.flatMap(category =>
-            (category.items || []).map(item => String(item.id))
-          )
-        );
-
-        Object.keys(state.answers).forEach(id => {
-          if (!currentIds.has(id)) {
-            delete state.answers[id];
-          }
-        });
-
-        const store = state.stores.find(
-          item => String(item.apid) === state.apid
-        );
-
-        el("storeTitle").textContent =
-          store?.name || state.apid;
-
-        el("setup").classList.add("hidden");
-        el("checklist").classList.remove("hidden");
-
-        renderPromos();
-
-        showMessage("Актуальні промо завантажено.");
-
       } catch (error) {
-        showMessage(error.message, true);
+        setStatus(error.message, true);
       } finally {
-        el("refreshBtn").disabled = false;
-        el("startBtn").disabled = false;
+        $("refreshBtn").disabled = false;
       }
     }
 
-    function renderPromos() {
-      const container = el("categories");
-      container.replaceChildren();
+    function renderChecklist() {
+      const store = currentStore();
+      const content = $("checklistContent");
+
+      content.replaceChildren();
+
+      $("checklistInfo").textContent =
+        `${store?.name || ""} | APID ${state.apid}\n` +
+        `Співробітник: ${state.employee}`;
 
       state.categories.forEach(category => {
         if (!category.items?.length) return;
 
-        const section = document.createElement("section");
-
-        const title = document.createElement("h2");
-        title.textContent = category.name;
-        section.appendChild(title);
+        appendText(
+          content,
+          "div",
+          category.name,
+          "category"
+        );
 
         category.items.forEach(item => {
-          const product = document.createElement("div");
-          product.className = "product";
+          const id = String(item.id);
+          const block = el("div", null, "item");
 
-          const name = document.createElement("div");
-          name.className = "product-name";
-          name.textContent = item.name;
+          appendText(block, "h3", item.name);
 
-          const price = document.createElement("div");
-          price.className = "price";
-          price.textContent =
-            "Промоціна: " + item.priceLabel;
+          appendText(
+            block,
+            "div",
+            `Промоціна: ${item.priceLabel || "Не зазначено"}`,
+            "price"
+          );
 
-          product.append(name, price);
+          Object.entries(ANSWER_LABELS).forEach(
+            ([value, label]) => {
+              const row = el("label", null, "choice");
+              const input = document.createElement("input");
 
-          const choices = [
-            ["ok", "Оформлено, відповідає промо"],
-            ["no", "Не оформлено"],
-            ["missing", "Товар відсутній у магазині"]
-          ];
+              input.type = "radio";
+              input.name = "answer_" + id;
+              input.value = value;
+              input.checked = state.answers[id] === value;
 
-          choices.forEach(([value, label]) => {
-            const row = document.createElement("label");
-            row.className = "choice";
+              input.addEventListener("change", () => {
+                state.answers[id] = value;
+              });
 
-            const radio = document.createElement("input");
-            radio.type = "radio";
-            radio.name = "promo_" + item.id;
-            radio.value = value;
+              row.appendChild(input);
+              row.appendChild(el("span", label));
+              block.appendChild(row);
+            }
+          );
 
-            radio.checked =
-              state.answers[item.id] === value;
-
-            radio.addEventListener("change", () => {
-              state.answers[item.id] = value;
-              updateSaveButton();
-            });
-
-            row.append(
-              radio,
-              document.createTextNode(label)
-            );
-
-            product.appendChild(row);
-          });
-
-          section.appendChild(product);
+          content.appendChild(block);
         });
-
-        container.appendChild(section);
       });
-
-      updateSaveButton();
     }
 
-    function updateSaveButton() {
-      const items = state.categories.flatMap(
-        category => category.items || []
+    function summary() {
+      const items = allItems();
+
+      return {
+        total: items.length,
+        correct: items.filter(
+          item => state.answers[String(item.id)] === "ok"
+        ).length,
+        incorrect: items.filter(
+          item => state.answers[String(item.id)] === "no"
+        ).length,
+        missing: items.filter(
+          item => state.answers[String(item.id)] === "missing"
+        ).length
+      };
+    }
+
+    function renderMetrics(container, data) {
+      container.replaceChildren();
+
+      const metrics = [
+        [data.total, "Всього позицій"],
+        [data.correct, "Правильно оформлено"],
+        [data.incorrect, "Не оформлено"],
+        [data.missing, "Товар відсутній"]
+      ];
+
+      metrics.forEach(([value, label]) => {
+        const block = el("div", null, "metric");
+
+        appendText(block, "strong", value);
+        appendText(block, "span", label);
+
+        container.appendChild(block);
+      });
+    }
+
+    function reviewReport() {
+      const data = summary();
+
+      if (!data.total) {
+        alert("Немає актуальних промопозицій");
+        return;
+      }
+
+      if (
+        data.correct + data.incorrect + data.missing !==
+        data.total
+      ) {
+        alert(
+          "Заповніть усі позиції перед переглядом результатів"
+        );
+        return;
+      }
+
+      const store = currentStore();
+
+      $("reviewInfo").replaceChildren();
+
+      appendText(
+        $("reviewInfo"),
+        "p",
+        `Магазин: ${store?.name || ""} | APID ${state.apid}`
       );
 
-      const complete =
-        items.length > 0 &&
-        items.every(item => state.answers[item.id]);
+      appendText(
+        $("reviewInfo"),
+        "p",
+        `Співробітник: ${state.employee}`
+      );
 
-      // Збереження звітів підключимо окремо.
-      el("saveBtn").disabled = true;
+      renderMetrics($("reviewSummary"), data);
 
-      if (complete) {
-        showMessage(
-          "Усі позиції перевірено. " +
-          "Наступний етап — збереження звіту."
+      const content = $("reviewContent");
+      content.replaceChildren();
+
+      state.categories.forEach(category => {
+        if (!category.items?.length) return;
+
+        appendText(
+          content,
+          "div",
+          category.name,
+          "category"
+        );
+
+        category.items.forEach(item => {
+          const block = el("div", null, "review-row");
+          const answer = state.answers[String(item.id)];
+
+          appendText(block, "strong", item.name);
+
+          appendText(
+            block,
+            "span",
+            ANSWER_LABELS[answer],
+            answer === "ok"
+              ? "status-ok"
+              : answer === "no"
+                ? "status-no"
+                : "status-missing"
+          );
+
+          content.appendChild(block);
+        });
+      });
+
+      $("submitStatus").textContent = "";
+      showView("reviewView");
+    }
+
+    function setReportLinks(result) {
+      const links = [
+        ["spreadsheetLink", result.spreadsheetUrl],
+        ["documentLink", result.documentUrl]
+      ];
+
+      links.forEach(([id, url]) => {
+        const link = $(id);
+
+        const valid =
+          typeof url === "string" &&
+          /^https:\/\/(docs|drive)\.google\.com\//.test(url);
+
+        link.classList.toggle("hidden", !valid);
+
+        if (valid) {
+          link.href = url;
+        } else {
+          link.removeAttribute("href");
+        }
+      });
+    }
+
+    async function submitReport() {
+      if (state.submitting || state.completed) return;
+
+      if (!state.reportId) {
+        state.reportId = newReportId();
+      }
+
+      state.submitting = true;
+      $("submitBtn").disabled = true;
+      $("backToChecklistBtn").disabled = true;
+
+      $("submitStatus").textContent =
+        "Збереження звіту...";
+
+      try {
+        const result = await api("/save", {
+          reportId: state.reportId,
+          apid: state.apid,
+          employee: state.employee,
+          answers: state.answers
+        });
+
+        if (!result.saved) {
+          throw new Error(
+            "Сервер не підтвердив збереження"
+          );
+        }
+
+        state.completed = true;
+
+        const data = result.summary || summary();
+
+        $("successSummary").replaceChildren();
+
+        appendText(
+          $("successSummary"),
+          "p",
+          `${currentStore()?.name || ""} | ${state.employee}`
+        );
+
+        renderMetrics(
+          $("successSummary"),
+          data
+        );
+
+        setReportLinks(result);
+        showView("successView");
+
+      } catch (error) {
+        $("submitStatus").textContent =
+          "Не вдалося підтвердити збереження: " +
+          error.message +
+          ". Повторне натискання використає той самий ID звіту.";
+
+        $("submitStatus").className =
+          "message error";
+
+      } finally {
+        state.submitting = false;
+        $("submitBtn").disabled = false;
+
+        $("backToChecklistBtn").disabled =
+          state.completed;
+      }
+    }
+
+    function resetReport() {
+      state.apid = "";
+      state.answers = {};
+      state.reportId = "";
+      state.completed = false;
+
+      $("storeSelect").value = "";
+      updateSelection();
+
+      showView("selectionView");
+    }
+
+    function historyLink(parent, text, url) {
+      if (
+        typeof url !== "string" ||
+        !/^https:\/\/(docs|drive)\.google\.com\//.test(url)
+      ) {
+        return;
+      }
+
+      const link = el("a", text, "link-button");
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      parent.appendChild(link);
+    }
+
+    async function openHistory(apid = "") {
+      state.historyReturn = state.completed
+        ? "successView"
+        : "selectionView";
+
+      showView("historyView");
+
+      const content = $("historyContent");
+
+      content.replaceChildren(
+        el("p", "Завантаження історії...", "muted")
+      );
+
+      $("historyStoreBtn").disabled = !state.apid;
+
+      try {
+        const result = await api("/history", { apid });
+
+        content.replaceChildren();
+
+        if (!result.history?.length) {
+          appendText(
+            content,
+            "p",
+            "Завершених звітів не знайдено.",
+            "muted"
+          );
+        }
+
+        (result.history || []).forEach(report => {
+          const block = el("div", null, "history-row");
+
+          appendText(
+            block,
+            "h3",
+            report.store || report.apid
+          );
+
+          appendText(
+            block,
+            "p",
+            `${report.date} | ${report.employee}`,
+            "muted small"
+          );
+
+          appendText(
+            block,
+            "p",
+            `Правильно: ${report.correct}; ` +
+            `Не оформлено: ${report.incorrect}; ` +
+            `Товар відсутній: ${report.missing}`
+          );
+
+          appendText(
+            block,
+            "p",
+            report.status || ""
+          );
+
+          historyLink(
+            block,
+            "Переглянути Google Docs",
+            report.documentUrl
+          );
+
+          content.appendChild(block);
+        });
+
+        const link = $("historySpreadsheetLink");
+
+        if (
+          typeof result.spreadsheetUrl === "string" &&
+          /^https:\/\/docs\.google\.com\//.test(
+            result.spreadsheetUrl
+          )
+        ) {
+          link.href = result.spreadsheetUrl;
+          link.classList.remove("hidden");
+        } else {
+          link.classList.add("hidden");
+        }
+
+      } catch (error) {
+        content.replaceChildren(
+          el("p", error.message, "error")
         );
       }
     }
 
-    showMessage("Підключення до сервера...");
-    loadStores();
+    $("employeeSelect").addEventListener(
+      "change",
+      () => {
+        $("storeSelect").value = "";
+        updateSelection();
+      }
+    );
+
+    $("storeSelect").addEventListener(
+      "change",
+      updateSelection
+    );
+
+    $("refreshBtn").addEventListener(
+      "click",
+      refreshData
+    );
+
+    $("startBtn").addEventListener(
+      "click",
+      () => {
+        state.answers = {};
+        state.reportId = "";
+        state.completed = false;
+
+        renderChecklist();
+        showView("checklistView");
+      }
+    );
+
+    $("backToSelectionBtn").addEventListener(
+      "click",
+      () => showView("selectionView")
+    );
+
+    $("reviewBtn").addEventListener(
+      "click",
+      reviewReport
+    );
+
+    $("backToChecklistBtn").addEventListener(
+      "click",
+      () => {
+        renderChecklist();
+        showView("checklistView");
+      }
+    );
+
+    $("submitBtn").addEventListener(
+      "click",
+      submitReport
+    );
+
+    $("newReportBtn").addEventListener(
+      "click",
+      resetReport
+    );
+
+    $("openHistoryBtn").addEventListener(
+      "click",
+      () => openHistory()
+    );
+
+    $("successHistoryBtn").addEventListener(
+      "click",
+      () => openHistory()
+    );
+
+    $("historyAllBtn").addEventListener(
+      "click",
+      () => openHistory()
+    );
+
+    $("historyStoreBtn").addEventListener(
+      "click",
+      () => openHistory(state.apid)
+    );
+
+    $("historyBackBtn").addEventListener(
+      "click",
+      () => showView(state.historyReturn)
+    );
+
+    refreshData();
   </script>
 </body>
 </html>
