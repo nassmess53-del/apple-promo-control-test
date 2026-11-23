@@ -16,21 +16,15 @@
   --blue:#0071e3;
   --green:#248a46;
   --red:#d12c36;
-  --orange:#a75c00;
 }
 * { box-sizing:border-box; }
 body {
   margin:0;
   background:var(--bg);
   color:var(--text);
-  font:16px -apple-system,BlinkMacSystemFont,
-    "Segoe UI",Arial,sans-serif;
+  font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
 }
-.wrap {
-  max-width:640px;
-  margin:auto;
-  padding:18px 14px 40px;
-}
+.wrap { max-width:640px; margin:auto; padding:18px 14px 40px; }
 .panel {
   background:var(--surface);
   border:1px solid var(--line);
@@ -38,16 +32,11 @@ body {
   padding:22px 18px;
   margin-bottom:14px;
 }
-h1 {
-  font-size:29px;
-  margin:0 0 5px;
-  letter-spacing:-.5px;
-}
+h1 { font-size:29px; margin:0 0 5px; letter-spacing:-.5px; }
 h2 { font-size:21px; margin:0 0 15px; }
 h3 { font-size:18px; margin:0 0 8px; }
 p { line-height:1.5; }
 .muted { color:var(--muted); }
-.small { font-size:13px; }
 .hidden { display:none!important; }
 .top {
   display:flex;
@@ -55,11 +44,18 @@ p { line-height:1.5; }
   align-items:flex-start;
   gap:10px;
 }
-label.field {
-  display:block;
-  font-weight:650;
-  margin:22px 0 9px;
+.top > div { min-width:0; }
+#refreshBtn {
+  flex:0 0 auto;
+  min-height:34px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:500;
+  line-height:1.2;
+  white-space:nowrap;
+  border-radius:10px;
 }
+label.field { display:block; font-weight:650; margin:22px 0 9px; }
 select,button { font:inherit; }
 select {
   width:100%;
@@ -78,19 +74,11 @@ button {
   cursor:pointer;
   font-weight:600;
 }
-button:disabled,select:disabled {
-  opacity:.48;
-  cursor:not-allowed;
-}
+button:disabled,select:disabled { opacity:.48; cursor:not-allowed; }
 .primary { background:var(--blue); color:#fff; }
 .secondary { background:#ededf0; color:var(--text); }
 .full { display:block; width:100%; margin-top:15px; }
-.actions {
-  display:flex;
-  flex-wrap:wrap;
-  gap:9px;
-  margin-top:20px;
-}
+.actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:20px; }
 .actions button { flex:1; }
 .category {
   font-size:21px;
@@ -98,10 +86,7 @@ button:disabled,select:disabled {
   padding:16px 0 6px;
   border-bottom:1px solid var(--line);
 }
-.item {
-  padding:20px 0;
-  border-bottom:1px solid var(--line);
-}
+.item { padding:20px 0; border-bottom:1px solid var(--line); }
 .item:last-child { border-bottom:0; }
 .price { color:var(--muted); margin:8px 0 13px; }
 .choice {
@@ -125,23 +110,10 @@ button:disabled,select:disabled {
   gap:10px;
   margin:16px 0;
 }
-.metric {
-  padding:14px;
-  background:var(--bg);
-  border-radius:13px;
-}
-.metric strong {
-  display:block;
-  font-size:26px;
-  margin-bottom:4px;
-}
-.metric span {
-  font-size:13px;
-  color:var(--muted);
-}
+.metric { padding:14px; background:var(--bg); border-radius:13px; }
+.metric strong { display:block; font-size:26px; margin-bottom:4px; }
+.metric span { font-size:13px; color:var(--muted); }
 .status-ok { color:var(--green); }
-.status-no { color:var(--red); }
-.status-missing { color:var(--orange); }
 .message {
   margin-top:16px;
   font-size:14px;
@@ -149,7 +121,6 @@ button:disabled,select:disabled {
   white-space:pre-line;
 }
 .error { color:var(--red); }
-.success { color:var(--green); }
 .link-button {
   display:block;
   text-align:center;
@@ -161,12 +132,7 @@ button:disabled,select:disabled {
   font-weight:650;
   margin-top:10px;
 }
-.photo-actions {
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:15px;
-}
+.photo-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:15px; }
 .photo-actions button { flex:1; font-size:14px; }
 .photo-list {
   display:grid;
@@ -174,7 +140,7 @@ button:disabled,select:disabled {
   gap:9px;
   margin-top:12px;
 }
-.photo-card { position:relative; min-width:0; }
+.photo-card { min-width:0; }
 .photo-card img {
   width:100%;
   height:100px;
@@ -191,11 +157,7 @@ button:disabled,select:disabled {
   font-size:12px;
   background:#ededf0;
 }
-.photo-note {
-  font-size:13px;
-  color:var(--muted);
-  margin-top:10px;
-}
+.photo-note { font-size:13px; color:var(--muted); margin-top:10px; }
 .photo-required {
   color:var(--red);
   font-size:13px;
@@ -211,7 +173,7 @@ button:disabled,select:disabled {
 }
 .progress-fill {
   height:100%;
-  width:0%;
+  width:0;
   background:var(--blue);
   border-radius:20px;
   transition:width .2s ease;
@@ -220,89 +182,78 @@ button:disabled,select:disabled {
   .panel { padding:18px 14px; }
   h1 { font-size:25px; }
   button { font-size:14px; }
+  #refreshBtn { font-size:12px; }
 }
 </style>
 </head>
-
 <body>
 <main class="wrap">
-<section class="panel">
-  <div class="top">
-    <div>
-      <h1>Актуальні промо</h1>
-      <div class="muted">Apple Promo Control Test</div>
+  <section class="panel">
+    <div class="top">
+      <div>
+        <h1>Актуальні промо</h1>
+        <div class="muted">Apple Promo Control Test</div>
+      </div>
+      <button id="refreshBtn" class="secondary" type="button">↻ Оновити</button>
     </div>
-    <button id="refreshBtn" class="secondary" type="button">
-      ↻ Оновити
-    </button>
-  </div>
-  <p id="globalStatus" class="message muted"
-     aria-live="polite">Завантаження...</p>
-</section>
+    <p id="globalStatus" class="message muted" aria-live="polite">Завантаження...</p>
+  </section>
 
-<section id="selectionView" class="panel">
-  <h2>Нова перевірка</h2>
-  <label class="field" for="employeeSelect">Співробітник</label>
-  <select id="employeeSelect" disabled>
-    <option value="">Оберіть співробітника</option>
-  </select>
-  <label class="field" for="storeSelect">Магазин</label>
-  <select id="storeSelect" disabled>
-    <option value="">Оберіть магазин</option>
-  </select>
-  <button id="startBtn" class="primary full" disabled>
-    Ознайомитися з актуальними промо
-  </button>
-</section>
-
-<section id="checklistView" class="panel hidden">
-  <h2>Перевірка промо</h2>
-  <p id="checklistInfo" class="muted"></p>
-  <div id="checklistContent"></div>
-  <div class="actions">
-    <button id="backToSelectionBtn" class="secondary">Назад</button>
-    <button id="reviewBtn" class="primary">
-      Переглянути результати
+  <section id="selectionView" class="panel">
+    <h2>Нова перевірка</h2>
+    <label class="field" for="employeeSelect">Співробітник</label>
+    <select id="employeeSelect" disabled>
+      <option value="">Оберіть співробітника</option>
+    </select>
+    <label class="field" for="storeSelect">Магазин</label>
+    <select id="storeSelect" disabled>
+      <option value="">Оберіть магазин</option>
+    </select>
+    <button id="startBtn" class="primary full" disabled>
+      Ознайомитися з актуальними промо
     </button>
-  </div>
-</section>
+  </section>
 
-<section id="reviewView" class="panel hidden">
-  <h2>Перегляд перед надсиланням</h2>
-  <div id="reviewInfo"></div>
-  <div id="reviewSummary" class="summary"></div>
-  <div class="actions">
-    <button id="backToChecklistBtn" class="secondary">
-      Повернутися
-    </button>
-    <button id="submitBtn" class="primary">
-      Надіслати звіт
-    </button>
-  </div>
-  <div id="progressTrack" class="progress-track hidden">
-    <div id="progressFill" class="progress-fill"></div>
-  </div>
-  <p id="submitStatus" class="message" aria-live="polite"></p>
-</section>
+  <section id="checklistView" class="panel hidden">
+    <h2>Перевірка промо</h2>
+    <p id="checklistInfo" class="muted"></p>
+    <div id="checklistContent"></div>
+    <div class="actions">
+      <button id="backToSelectionBtn" class="secondary">Назад</button>
+      <button id="reviewBtn" class="primary">Переглянути результати</button>
+    </div>
+  </section>
 
-<section id="successView" class="panel hidden">
-  <h2 class="status-ok">✓ Звіт успішно надіслано</h2>
-  <a id="documentLink" class="link-button hidden"
-     href="#" target="_blank" rel="noopener noreferrer">
-    Переглянути свій звіт
-  </a>
-  <button id="newReportBtn" class="primary full">
-    Створити новий звіт
-  </button>
-</section>
+  <section id="reviewView" class="panel hidden">
+    <h2>Перегляд перед надсиланням</h2>
+    <div id="reviewInfo"></div>
+    <div id="reviewSummary" class="summary"></div>
+    <div class="actions">
+      <button id="backToChecklistBtn" class="secondary">Повернутися</button>
+      <button id="submitBtn" class="primary">Надіслати звіт</button>
+    </div>
+    <div id="progressTrack" class="progress-track hidden">
+      <div id="progressFill" class="progress-fill"></div>
+    </div>
+    <p id="submitStatus" class="message" aria-live="polite"></p>
+  </section>
+
+  <section id="successView" class="panel hidden">
+    <h2 class="status-ok">✓ Звіт успішно надіслано</h2>
+    <a id="documentLink" class="link-button hidden"
+       href="#" target="_blank" rel="noopener noreferrer">
+      Переглянути свій звіт
+    </a>
+    <button id="newReportBtn" class="primary full">
+      Створити новий звіт
+    </button>
+  </section>
 </main>
 
 <script>
 "use strict";
 
-const API_URL =
-  "https://apple-promo-control-test.nass-mess53.workers.dev";
-
+const API_URL = "https://apple-promo-control-test.nass-mess53.workers.dev";
 const telegram = window.Telegram?.WebApp || null;
 
 if (telegram) {
@@ -318,7 +269,7 @@ const ANSWER_LABELS = {
 
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const MAX_PHOTOS_PER_ITEM = 3;
-const MAX_PARALLEL_UPLOADS = 3;
+const MAX_PARALLEL_UPLOADS = 2;
 const MAX_UPLOAD_ATTEMPTS = 3;
 const UPLOAD_TIMEOUT_MS = 70000;
 
@@ -354,22 +305,17 @@ function appendText(parent,tag,text,className = "") {
 
 function showView(id) {
   ["selectionView","checklistView","reviewView","successView"]
-    .forEach(view => {
-      $(view).classList.toggle("hidden",view !== id);
-    });
+    .forEach(view => $(view).classList.toggle("hidden",view !== id));
   window.scrollTo(0,0);
 }
 
 function setStatus(message,error = false) {
   $("globalStatus").textContent = message;
-  $("globalStatus").className =
-    "message " + (error ? "error" : "muted");
+  $("globalStatus").className = "message " + (error ? "error" : "muted");
 }
 
 function currentStore() {
-  return state.stores.find(
-    store => String(store.apid) === state.apid
-  );
+  return state.stores.find(store => String(store.apid) === state.apid);
 }
 
 function storeLabel(store) {
@@ -377,9 +323,7 @@ function storeLabel(store) {
 }
 
 function allItems() {
-  return state.categories.flatMap(
-    category => category.items || []
-  );
+  return state.categories.flatMap(category => category.items || []);
 }
 
 function newId() {
@@ -393,10 +337,9 @@ function newId() {
 
 async function api(path,payload = {},options = {}) {
   const controller = new AbortController();
-  const timeoutMs = options.timeout || 30000;
   const timeout = setTimeout(
     () => controller.abort(),
-    timeoutMs
+    options.timeout || 30000
   );
 
   try {
@@ -418,27 +361,20 @@ async function api(path,payload = {},options = {}) {
     }
 
     if (!response.ok || !result.ok) {
-      const error = new Error(
-        result.error || "Помилка сервера"
-      );
+      const error = new Error(result.error || "Помилка сервера");
       error.status = response.status;
       throw error;
     }
-
     return result;
   } catch (error) {
     if (error.name === "AbortError") {
-      const timeoutError = new Error(
-        "Час очікування відповіді вичерпано"
-      );
+      const timeoutError = new Error("Час очікування відповіді вичерпано");
       timeoutError.retryable = true;
       throw timeoutError;
     }
-
     if (error instanceof TypeError || error.status >= 500) {
       error.retryable = true;
     }
-
     throw error;
   } finally {
     clearTimeout(timeout);
@@ -473,13 +409,11 @@ async function loadDirectory() {
   });
 
   state.stores = [...uniqueStores.values()];
-  state.employees = [
-    ...new Set(
-      (result.employees || [])
-        .map(name => String(name).trim())
-        .filter(Boolean)
-    )
-  ].sort((a,b) => a.localeCompare(b,"uk"));
+  state.employees = [...new Set(
+    (result.employees || [])
+      .map(name => String(name).trim())
+      .filter(Boolean)
+  )].sort((a,b) => a.localeCompare(b,"uk"));
 
   fillSelect(
     $("employeeSelect"),
@@ -492,10 +426,7 @@ async function loadDirectory() {
     $("storeSelect"),
     "Оберіть магазин",
     state.stores,
-    store => ({
-      label:storeLabel(store),
-      value:store.apid
-    })
+    store => ({label:storeLabel(store),value:store.apid})
   );
 
   $("employeeSelect").disabled = false;
@@ -503,21 +434,17 @@ async function loadDirectory() {
   if (state.employees.includes(state.employee)) {
     $("employeeSelect").value = state.employee;
   }
-
   if (state.stores.some(store => store.apid === state.apid)) {
     $("storeSelect").value = state.apid;
   }
-
   updateSelection();
 }
 
 async function loadPromos() {
   const result = await api("/promos");
-
   if (!Array.isArray(result.categories)) {
     throw new Error("Невірний формат промопозицій");
   }
-
   state.categories = result.categories;
   updateSelection();
 }
@@ -558,9 +485,7 @@ function releasePhoto(photo) {
 }
 
 function clearPhotos() {
-  Object.values(state.photos).forEach(list => {
-    list.forEach(releasePhoto);
-  });
+  Object.values(state.photos).forEach(list => list.forEach(releasePhoto));
   state.photos = {};
 }
 
@@ -671,7 +596,6 @@ function addPhotoControls(block,itemId) {
         uploaded:false
       });
     }
-
     renderPhotos();
   }
 
@@ -689,11 +613,8 @@ function addPhotoControls(block,itemId) {
   });
 
   actions.append(camera,gallery);
-  section.append(
-    actions,cameraInput,galleryInput,previews,note,required
-  );
+  section.append(actions,cameraInput,galleryInput,previews,note,required);
   block.appendChild(section);
-
   return renderPhotos;
 }
 
@@ -707,7 +628,6 @@ function renderChecklist() {
 
   state.categories.forEach(category => {
     if (!category.items?.length) return;
-
     appendText(content,"div",category.name,"category");
 
     category.items.forEach(item => {
@@ -754,7 +674,6 @@ function renderChecklist() {
 
 function summary() {
   const items = allItems();
-
   return {
     total:items.length,
     correct:items.filter(
@@ -771,7 +690,6 @@ function summary() {
 
 function renderMetrics(container,data) {
   container.replaceChildren();
-
   [
     [data.total,"Всього позицій"],
     [data.correct,"Правильно оформлено"],
@@ -787,33 +705,25 @@ function renderMetrics(container,data) {
 
 function validateReport() {
   const items = allItems();
-
-  if (!items.length) {
-    return "Немає актуальних промопозицій";
-  }
+  if (!items.length) return "Немає актуальних промопозицій";
 
   for (const item of items) {
     const id = String(item.id);
     const answer = state.answers[id];
 
-    if (!Object.hasOwn(ANSWER_LABELS,answer)) {
+    if (!Object.prototype.hasOwnProperty.call(ANSWER_LABELS,answer)) {
       return `Оберіть статус для позиції:\n${item.name}`;
     }
 
     if (answer === "ok" && !photoList(id).length) {
-      return (
-        "Додайте щонайменше одне фото для позиції:\n" +
-        item.name
-      );
+      return "Додайте щонайменше одне фото для позиції:\n" + item.name;
     }
   }
-
   return "";
 }
 
 function reviewReport() {
   const error = validateReport();
-
   if (error) {
     alert(error);
     return;
@@ -821,18 +731,16 @@ function reviewReport() {
 
   const info = $("reviewInfo");
   info.replaceChildren();
-
   appendText(info,"p",storeLabel(currentStore()));
-  appendText(
-    info,"p",
-    `Співробітник: ${state.employee}`,
-    "muted"
-  );
-
+  appendText(info,"p",`Співробітник: ${state.employee}`,"muted");
   renderMetrics($("reviewSummary"),summary());
+
+  $("submitBtn").disabled = false;
+  $("backToChecklistBtn").disabled = false;
   $("submitStatus").textContent = "";
   $("submitStatus").className = "message";
   $("progressTrack").classList.add("hidden");
+  $("progressFill").style.width = "0%";
 
   showView("reviewView");
 }
@@ -844,12 +752,10 @@ function fileToBase64(file) {
     reader.onload = () => {
       const result = String(reader.result || "");
       const comma = result.indexOf(",");
-
       if (comma < 0) {
         reject(new Error("Не вдалося прочитати фотографію"));
         return;
       }
-
       resolve(result.slice(comma + 1));
     };
 
@@ -867,26 +773,18 @@ function countPhotos() {
   );
 }
 
-function updateProgress(done,total,active) {
-  const percent = total
-    ? Math.round(done / total * 100)
-    : 100;
-
+function updateProgress(done,total) {
+  const percent = total ? Math.round(done / total * 100) : 100;
   $("progressTrack").classList.remove("hidden");
   $("progressFill").style.width = percent + "%";
-
   $("submitStatus").textContent =
-    `Збережено ${done} із ${total} фото.\n` +
-    `Одночасно завантажуються до ` +
-    `${MAX_PARALLEL_UPLOADS} файлів.` +
-    (active ? `\nАктивних завантажень: ${active}.` : "");
+    `Завантажено ${done} із ${total} фото`;
 }
 
 async function uploadSinglePhoto(itemId,photo) {
   if (photo.uploaded) return;
 
   const base64 = await fileToBase64(photo.file);
-
   let lastError;
 
   for (let attempt = 1; attempt <= MAX_UPLOAD_ATTEMPTS; attempt++) {
@@ -906,31 +804,19 @@ async function uploadSinglePhoto(itemId,photo) {
         result.photoId !== photo.id ||
         result.itemId !== itemId
       ) {
-        throw new Error(
-          "Сервер не підтвердив збереження фотографії"
-        );
+        throw new Error("Сервер не підтвердив фотографію");
       }
 
       photo.uploaded = true;
       return;
-
     } catch (error) {
       lastError = error;
-
-      if (!error.retryable ||
-          attempt === MAX_UPLOAD_ATTEMPTS) {
-        break;
-      }
-
-      await new Promise(resolve => {
-        setTimeout(resolve,attempt * 1200);
-      });
+      if (!error.retryable || attempt === MAX_UPLOAD_ATTEMPTS) break;
+      await new Promise(resolve => setTimeout(resolve,attempt * 1200));
     }
   }
 
-  throw lastError || new Error(
-    "Не вдалося завантажити фотографію"
-  );
+  throw lastError || new Error("Не вдалося завантажити фотографію");
 }
 
 async function uploadAllPhotos() {
@@ -940,79 +826,49 @@ async function uploadAllPhotos() {
     );
 
   const total = entries.length;
-  let completed = entries.filter(
-    entry => entry.photo.uploaded
-  ).length;
-
-  const pending = entries.filter(
-    entry => !entry.photo.uploaded
-  );
+  let completed = entries.filter(entry => entry.photo.uploaded).length;
+  const pending = entries.filter(entry => !entry.photo.uploaded);
 
   let nextIndex = 0;
-  let active = 0;
   const errors = [];
 
-  updateProgress(completed,total,active);
+  updateProgress(completed,total);
 
-  async function worker() {
+  async function uploadWorker() {
     while (nextIndex < pending.length) {
-      const index = nextIndex++;
-      const entry = pending[index];
-
-      active++;
-      updateProgress(completed,total,active);
+      const entry = pending[nextIndex++];
 
       try {
-        await uploadSinglePhoto(
-          entry.itemId,
-          entry.photo
-        );
+        await uploadSinglePhoto(entry.itemId,entry.photo);
       } catch (error) {
-        errors.push({
-          itemId:entry.itemId,
-          error
-        });
+        errors.push(error);
       } finally {
-        active--;
-
-        if (entry.photo.uploaded) {
-          completed++;
-        }
-
-        updateProgress(completed,total,active);
+        if (entry.photo.uploaded) completed++;
+        updateProgress(completed,total);
       }
     }
   }
 
-  const concurrency = Math.min(
-    MAX_PARALLEL_UPLOADS,
-    pending.length
-  );
-
+  const concurrency = Math.min(MAX_PARALLEL_UPLOADS,pending.length);
   await Promise.all(
-    Array.from({length:concurrency},() => worker())
+    Array.from({length:concurrency},() => uploadWorker())
   );
 
   if (errors.length) {
     throw new Error(
-      `Не підтверджено ${errors.length} фото із ${total}.\n` +
-      `Збережено: ${completed}.\n` +
-      `Повторне натискання «Надіслати звіт» ` +
-      `завантажить лише непідтверджені файли.\n` +
-      `Перша помилка: ${errors[0].error.message}`
+      `Не вдалося завантажити ${errors.length} фото. ` +
+      "Натисніть «Надіслати звіт» ще раз."
     );
   }
 }
 
 function setReportLink(url) {
   const link = $("documentLink");
-
   const valid =
     typeof url === "string" &&
     /^https:\/\/docs\.google\.com\//.test(url);
 
   link.classList.toggle("hidden",!valid);
-
   if (valid) link.href = url;
   else link.removeAttribute("href");
 }
@@ -1021,7 +877,6 @@ async function submitReport() {
   if (state.submitting || state.completed) return;
 
   const validationError = validateReport();
-
   if (validationError) {
     alert(validationError);
     renderChecklist();
@@ -1037,12 +892,9 @@ async function submitReport() {
   $("refreshBtn").disabled = true;
 
   try {
-    if (countPhotos()) {
-      await uploadAllPhotos();
-    }
+    if (countPhotos()) await uploadAllPhotos();
 
-    $("submitStatus").textContent =
-      "Фотографії збережено.\nФормування звіту...";
+    $("submitStatus").textContent = "Формування звіту...";
 
     const result = await api("/save",{
       reportId:state.reportId,
@@ -1052,9 +904,7 @@ async function submitReport() {
     },{timeout:70000});
 
     if (!result.saved) {
-      throw new Error(
-        "Сервер не підтвердив збереження звіту"
-      );
+      throw new Error("Сервер не підтвердив збереження звіту");
     }
 
     state.completed = true;
@@ -1064,13 +914,10 @@ async function submitReport() {
 
   } catch (error) {
     $("submitStatus").textContent =
-      "Не вдалося завершити звіт:\n" +
+      "Не вдалося завершити звіт: " +
       error.message +
-      "\n\nПеревірте з'єднання та натисніть " +
-      "«Надіслати звіт» повторно.";
-
+      "\nСпробуйте надіслати ще раз.";
     $("submitStatus").className = "message error";
-
   } finally {
     state.submitting = false;
     $("submitBtn").disabled = state.completed;
@@ -1081,12 +928,25 @@ async function submitReport() {
 
 function resetReport() {
   clearPhotos();
+
   state.apid = "";
   state.answers = {};
   state.reportId = "";
   state.completed = false;
+  state.submitting = false;
 
   $("storeSelect").value = "";
+  $("submitBtn").disabled = false;
+  $("backToChecklistBtn").disabled = false;
+  $("backToSelectionBtn").disabled = false;
+  $("reviewBtn").disabled = false;
+
+  $("submitStatus").textContent = "";
+  $("submitStatus").className = "message";
+  $("progressTrack").classList.add("hidden");
+  $("progressFill").style.width = "0%";
+  setReportLink("");
+
   updateSelection();
   showView("selectionView");
 }
@@ -1096,19 +956,21 @@ $("employeeSelect").addEventListener("change",() => {
   updateSelection();
 });
 
-$("storeSelect").addEventListener(
-  "change",updateSelection
-);
-
-$("refreshBtn").addEventListener(
-  "click",refreshData
-);
+$("storeSelect").addEventListener("change",updateSelection);
+$("refreshBtn").addEventListener("click",refreshData);
 
 $("startBtn").addEventListener("click",() => {
   clearPhotos();
   state.answers = {};
   state.reportId = newId();
   state.completed = false;
+
+  $("submitBtn").disabled = false;
+  $("backToChecklistBtn").disabled = false;
+  $("submitStatus").textContent = "";
+  $("progressTrack").classList.add("hidden");
+  $("progressFill").style.width = "0%";
+
   renderChecklist();
   showView("checklistView");
 });
@@ -1126,22 +988,15 @@ $("backToSelectionBtn").addEventListener("click",() => {
   showView("selectionView");
 });
 
-$("reviewBtn").addEventListener(
-  "click",reviewReport
-);
+$("reviewBtn").addEventListener("click",reviewReport);
 
 $("backToChecklistBtn").addEventListener("click",() => {
   renderChecklist();
   showView("checklistView");
 });
 
-$("submitBtn").addEventListener(
-  "click",submitReport
-);
-
-$("newReportBtn").addEventListener(
-  "click",resetReport
-);
+$("submitBtn").addEventListener("click",submitReport);
+$("newReportBtn").addEventListener("click",resetReport);
 
 refreshData();
 </script>
