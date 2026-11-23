@@ -2,1127 +2,854 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Apple Promo Control Test</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    :root {
-      --bg: #f5f5f7;
-      --surface: #ffffff;
-      --text: #1d1d1f;
-      --muted: #6e6e73;
-      --line: #e5e5e8;
-      --blue: #0071e3;
-      --green: #248a46;
-      --red: #d12c36;
-      --orange: #a75c00;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont,
-                   "Segoe UI", Arial, sans-serif;
-      font-size: 16px;
-    }
-    .wrap {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 18px 14px 40px;
-    }
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 22px 18px;
-      margin-bottom: 14px;
-    }
-    h1 {
-      font-size: 29px;
-      margin: 0 0 5px;
-      letter-spacing: -.5px;
-    }
-    h2 { font-size: 21px; margin: 0 0 15px; }
-    h3 { font-size: 18px; margin: 0 0 8px; }
-    p { line-height: 1.5; }
-    .muted { color: var(--muted); }
-    .small { font-size: 13px; }
-    .hidden { display: none !important; }
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-    }
-    label.field {
-      display: block;
-      font-weight: 650;
-      margin: 22px 0 9px;
-    }
-    select, button {
-      font: inherit;
-    }
-    select {
-      width: 100%;
-      padding: 15px 13px;
-      border: 1px solid #d5d5d9;
-      border-radius: 14px;
-      background: #fff;
-      color: var(--text);
-      min-height: 54px;
-    }
-    select:disabled { opacity: .55; }
-    button {
-      border: 0;
-      border-radius: 14px;
-      min-height: 49px;
-      padding: 12px 16px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    button:disabled {
-      opacity: .48;
-      cursor: not-allowed;
-    }
-    .primary {
-      background: var(--blue);
-      color: white;
-    }
-    .secondary {
-      background: #ededf0;
-      color: var(--text);
-    }
-    .danger {
-      background: var(--red);
-      color: white;
-    }
-    .full {
-      display: block;
-      width: 100%;
-      margin-top: 15px;
-    }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-top: 20px;
-    }
-    .actions button { flex: 1; }
-    .category {
-      font-size: 21px;
-      font-weight: 700;
-      padding: 16px 0 6px;
-      border-bottom: 1px solid var(--line);
-    }
-    .item {
-      padding: 20px 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .item:last-child { border-bottom: 0; }
-    .price {
-      color: var(--muted);
-      margin: 8px 0 13px;
-    }
-    .choice {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 11px 0;
-      cursor: pointer;
-      line-height: 1.35;
-    }
-    .choice input {
-      width: 21px;
-      height: 21px;
-      margin: 0;
-      flex: none;
-      accent-color: var(--blue);
-    }
-    .summary {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 16px 0;
-    }
-    .metric {
-      padding: 14px;
-      background: var(--bg);
-      border-radius: 13px;
-    }
-    .metric strong {
-      display: block;
-      font-size: 26px;
-      margin-bottom: 4px;
-    }
-    .metric span {
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .status-ok { color: var(--green); }
-    .status-no { color: var(--red); }
-    .status-missing { color: var(--orange); }
-    .review-row {
-      padding: 14px 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .review-row:last-child { border-bottom: 0; }
-    .review-row strong {
-      display: block;
-      margin-bottom: 6px;
-    }
-    .review-row span { font-size: 14px; }
-    .history-row {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 15px;
-      margin: 12px 0;
-    }
-    .history-row p { margin: 6px 0; }
-    .message {
-      margin-top: 16px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    .error { color: var(--red); }
-    .success { color: var(--green); }
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      margin: 15px 0;
-    }
-    .toolbar button { flex: 1; }
-    .link-button {
-      display: block;
-      text-align: center;
-      text-decoration: none;
-      background: #ededf0;
-      color: var(--text);
-      padding: 15px;
-      border-radius: 14px;
-      font-weight: 650;
-      margin-top: 10px;
-    }
-    .spinner { opacity: .7; }
-    @media (max-width: 380px) {
-      .panel { padding: 18px 14px; }
-      h1 { font-size: 25px; }
-      button { font-size: 14px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Apple Promo Control Test</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+  --bg:#f5f5f7;--surface:#fff;--text:#1d1d1f;
+  --muted:#6e6e73;--line:#e5e5e8;--blue:#0071e3;
+  --green:#248a46;--red:#d12c36;--orange:#a75c00
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:640px;margin:auto;padding:18px 14px 40px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px 18px;margin-bottom:14px}
+h1{font-size:29px;margin:0 0 5px;letter-spacing:-.5px}
+h2{font-size:21px;margin:0 0 15px}
+h3{font-size:18px;margin:0 0 8px}
+p{line-height:1.5}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.hidden{display:none!important}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+label.field{display:block;font-weight:650;margin:22px 0 9px}
+select,button{font:inherit}
+select{width:100%;padding:15px 13px;border:1px solid #d5d5d9;border-radius:14px;background:#fff;color:var(--text);min-height:54px}
+button{border:0;border-radius:14px;min-height:49px;padding:12px 16px;cursor:pointer;font-weight:600}
+button:disabled,select:disabled{opacity:.48;cursor:not-allowed}
+.primary{background:var(--blue);color:white}
+.secondary{background:#ededf0;color:var(--text)}
+.full{display:block;width:100%;margin-top:15px}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
+.actions button{flex:1}
+.category{font-size:21px;font-weight:700;padding:16px 0 6px;border-bottom:1px solid var(--line)}
+.item{padding:20px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.price{color:var(--muted);margin:8px 0 13px}
+.choice{display:flex;align-items:flex-start;gap:12px;padding:11px 0;cursor:pointer;line-height:1.35}
+.choice input{width:21px;height:21px;margin:0;flex:none;accent-color:var(--blue)}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.metric{padding:14px;background:var(--bg);border-radius:13px}
+.metric strong{display:block;font-size:26px;margin-bottom:4px}
+.metric span{font-size:13px;color:var(--muted)}
+.status-ok{color:var(--green)}
+.status-no{color:var(--red)}
+.status-missing{color:var(--orange)}
+.review-row{padding:14px 0;border-bottom:1px solid var(--line)}
+.review-row strong{display:block;margin-bottom:6px}
+.review-row span{font-size:14px}
+.message{margin-top:16px;font-size:14px;line-height:1.5;white-space:pre-line}
+.error{color:var(--red)}
+.success{color:var(--green)}
+.link-button{display:block;text-align:center;text-decoration:none;background:#ededf0;color:var(--text);padding:15px;border-radius:14px;font-weight:650;margin-top:10px}
+.photo-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.photo-actions button{flex:1;font-size:14px}
+.photo-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}
+.photo-card{position:relative;min-width:0}
+.photo-card img{width:100%;height:100px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.photo-card button{display:block;width:100%;min-height:34px;padding:5px;margin-top:4px;font-size:12px;background:#ededf0}
+.photo-note{font-size:13px;color:var(--muted);margin-top:10px}
+.upload-progress{padding:13px;border-radius:12px;background:var(--bg);margin-top:12px}
+@media(max-width:380px){
+  .panel{padding:18px 14px}
+  h1{font-size:25px}
+  button{font-size:14px}
+}
+</style>
 </head>
 <body>
-  <main class="wrap">
+<main class="wrap">
+<section class="panel">
+  <div class="top">
+    <div>
+      <h1>Актуальні промо</h1>
+      <div class="muted">Apple Promo Control Test</div>
+    </div>
+    <button id="refreshBtn" class="secondary" type="button">↻ Оновити</button>
+  </div>
+  <p id="globalStatus" class="message muted" aria-live="polite">Завантаження...</p>
+</section>
 
-    <section class="panel">
-      <div class="top">
-        <div>
-          <h1>Актуальні промо</h1>
-          <div class="muted">Apple Promo Control Test</div>
-        </div>
-        <button id="refreshBtn"
-                class="secondary"
-                type="button">
-          ↻ Оновити
-        </button>
-      </div>
-      <p id="globalStatus"
-         class="message muted"
-         aria-live="polite">
-        Завантаження...
-      </p>
-    </section>
+<section id="selectionView" class="panel">
+  <h2>Нова перевірка</h2>
+  <label class="field" for="employeeSelect">Співробітник</label>
+  <select id="employeeSelect" disabled>
+    <option value="">Оберіть співробітника</option>
+  </select>
+  <label class="field" for="storeSelect">Магазин</label>
+  <select id="storeSelect" disabled>
+    <option value="">Оберіть магазин</option>
+  </select>
+  <button id="startBtn" class="primary full" disabled>Ознайомитися з актуальними промо</button>
+</section>
 
-    <section id="selectionView" class="panel">
-      <h2>Нова перевірка</h2>
+<section id="checklistView" class="panel hidden">
+  <h2>Перевірка промо</h2>
+  <p id="checklistInfo" class="muted"></p>
+  <div id="checklistContent"></div>
+  <div class="actions">
+    <button id="backToSelectionBtn" class="secondary">Назад</button>
+    <button id="reviewBtn" class="primary">Переглянути результати</button>
+  </div>
+</section>
 
-      <label class="field" for="employeeSelect">
-        Співробітник
-      </label>
-      <select id="employeeSelect" disabled>
-        <option value="">Оберіть співробітника</option>
-      </select>
+<section id="reviewView" class="panel hidden">
+  <h2>Перегляд перед надсиланням</h2>
+  <p class="muted">Перевірте відповіді та фотографії. Після надсилання редагування буде недоступне.</p>
+  <div id="reviewInfo"></div>
+  <div id="reviewSummary" class="summary"></div>
+  <div id="reviewContent"></div>
+  <div class="actions">
+    <button id="backToChecklistBtn" class="secondary">Повернутися</button>
+    <button id="submitBtn" class="primary">Надіслати звіт</button>
+  </div>
+  <p id="submitStatus" class="message" aria-live="polite"></p>
+</section>
 
-      <label class="field" for="storeSelect">
-        Магазин
-      </label>
-      <select id="storeSelect" disabled>
-        <option value="">Оберіть магазин</option>
-      </select>
+<section id="successView" class="panel hidden">
+  <h2 class="status-ok">✓ Звіт успішно надіслано</h2>
+  <p>Результати збережено. Змінити цей звіт більше не можна.</p>
+  <div id="successSummary"></div>
+  <a id="documentLink" class="link-button hidden" href="#" target="_blank" rel="noopener noreferrer">Переглянути свій звіт</a>
+  <button id="newReportBtn" class="primary full">Створити новий звіт</button>
+</section>
+</main>
 
-      <button id="startBtn"
-              class="primary full"
-              type="button"
-              disabled>
-        Ознайомитися з актуальними промо
-      </button>
+<script>
+"use strict";
 
-      <button id="openHistoryBtn"
-              class="secondary full"
-              type="button">
-        Історія звітів
-      </button>
-    </section>
+const API_URL =
+  "https://apple-promo-control-test.nass-mess53.workers.dev";
 
-    <section id="checklistView"
-             class="panel hidden">
-      <h2>Перевірка промо</h2>
-      <p id="checklistInfo" class="muted"></p>
+const telegram = window.Telegram?.WebApp || null;
 
-      <div id="checklistContent"></div>
+if (telegram) {
+  telegram.ready();
+  telegram.expand();
+}
 
-      <div class="actions">
-        <button id="backToSelectionBtn"
-                class="secondary"
-                type="button">
-          Назад
-        </button>
-        <button id="reviewBtn"
-                class="primary"
-                type="button">
-          Переглянути результати
-        </button>
-      </div>
-    </section>
+const ANSWER_LABELS = {
+  ok: "Оформлено, відповідає промо",
+  no: "Не оформлено",
+  missing: "Товар відсутній у магазині"
+};
 
-    <section id="reviewView"
-             class="panel hidden">
-      <h2>Перегляд перед надсиланням</h2>
-      <p class="muted">
-        Перевірте відповіді. Після остаточного
-        надсилання редагування буде недоступне.
-      </p>
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const MAX_PHOTOS_PER_ITEM = 3;
 
-      <div id="reviewInfo"></div>
-      <div id="reviewSummary" class="summary"></div>
-      <div id="reviewContent"></div>
+const state = {
+  stores: [],
+  employees: [],
+  employee: "",
+  apid: "",
+  categories: [],
+  answers: {},
+  photos: {},
+  reportId: "",
+  submitting: false,
+  completed: false
+};
 
-      <div class="actions">
-        <button id="backToChecklistBtn"
-                class="secondary"
-                type="button">
-          Повернутися
-        </button>
-        <button id="submitBtn"
-                class="primary"
-                type="button">
-          Надіслати звіт
-        </button>
-      </div>
-      <p id="submitStatus"
-         class="message"
-         aria-live="polite"></p>
-    </section>
+const $ = id => document.getElementById(id);
 
-    <section id="successView"
-             class="panel hidden">
-      <h2 class="status-ok">
-        ✓ Звіт успішно надіслано
-      </h2>
-      <p>
-        Результати збережено. Змінити цей звіт
-        більше не можна.
-      </p>
+function el(tag, text, className = "") {
+  const node = document.createElement(tag);
+  if (text !== undefined && text !== null) {
+    node.textContent = String(text);
+  }
+  if (className) node.className = className;
+  return node;
+}
 
-      <div id="successSummary"></div>
+function appendText(parent, tag, text, className = "") {
+  const node = el(tag, text, className);
+  parent.appendChild(node);
+  return node;
+}
 
-      <a id="spreadsheetLink"
-         class="link-button hidden"
-         href="#"
-         target="_blank"
-         rel="noopener noreferrer">
-        Переглянути в Google Таблиці
-      </a>
+function showView(id) {
+  ["selectionView","checklistView","reviewView","successView"]
+    .forEach(view => {
+      $(view).classList.toggle("hidden", view !== id);
+    });
+  window.scrollTo(0, 0);
+}
 
-      <a id="documentLink"
-         class="link-button hidden"
-         href="#"
-         target="_blank"
-         rel="noopener noreferrer">
-        Відкрити Google Docs
-      </a>
+function setStatus(message, error = false) {
+  $("globalStatus").textContent = message;
+  $("globalStatus").className =
+    "message " + (error ? "error" : "muted");
+}
 
-      <button id="newReportBtn"
-              class="primary full"
-              type="button">
-        Створити новий звіт
-      </button>
+function currentStore() {
+  return state.stores.find(
+    store => String(store.apid) === state.apid
+  );
+}
 
-      <button id="successHistoryBtn"
-              class="secondary full"
-              type="button">
-        Історія звітів
-      </button>
-    </section>
+function allItems() {
+  return state.categories.flatMap(
+    category => category.items || []
+  );
+}
 
-    <section id="historyView"
-             class="panel hidden">
-      <h2>Історія звітів</h2>
-      <p class="muted small">
-        Завершені перевірки доступні лише
-        для перегляду.
-      </p>
+function newId() {
+  if (crypto.randomUUID) return crypto.randomUUID();
 
-      <div class="toolbar">
-        <button id="historyAllBtn"
-                class="secondary"
-                type="button">
-          Усі звіти
-        </button>
-        <button id="historyStoreBtn"
-                class="secondary"
-                type="button">
-          Цей магазин
-        </button>
-      </div>
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes)
+    .map(value => value.toString(16).padStart(2,"0"))
+    .join("");
+}
 
-      <div id="historyContent"></div>
+async function api(path, payload = {}) {
+  const response = await fetch(API_URL + path, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      ...payload,
+      initData: telegram?.initData || ""
+    })
+  });
 
-      <a id="historySpreadsheetLink"
-         class="link-button hidden"
-         href="#"
-         target="_blank"
-         rel="noopener noreferrer">
-        Відкрити Google Таблицю
-      </a>
+  let result;
 
-      <button id="historyBackBtn"
-              class="secondary full"
-              type="button">
-        Назад
-      </button>
-    </section>
+  try {
+    result = await response.json();
+  } catch (_) {
+    throw new Error("Сервер повернув некоректну відповідь");
+  }
 
-  </main>
+  if (!response.ok || !result.ok) {
+    throw new Error(result.error || "Помилка сервера");
+  }
 
-  <script>
-    "use strict";
+  return result;
+}
 
-    const API_URL =
-      "https://apple-promo-control-test.nass-mess53.workers.dev";
+function fillSelect(select, placeholder, items, mapper) {
+  select.replaceChildren(new Option(placeholder, ""));
 
-    const telegram = window.Telegram?.WebApp || null;
+  items.forEach(item => {
+    const option = mapper(item);
+    select.add(new Option(option.label, option.value));
+  });
+}
 
-    if (telegram) {
-      telegram.ready();
-      telegram.expand();
+function updateSelection() {
+  state.employee = $("employeeSelect").value;
+  state.apid = $("storeSelect").value;
+  $("storeSelect").disabled = !state.employee;
+  $("startBtn").disabled =
+    !state.employee || !state.apid || !state.categories.length;
+}
+
+async function loadDirectory() {
+  const result = await api("/stores");
+  const uniqueStores = new Map();
+
+  (result.stores || []).forEach(store => {
+    const apid = String(store.apid || "").trim();
+
+    if (apid && !uniqueStores.has(apid)) {
+      uniqueStores.set(apid, {...store, apid});
     }
+  });
 
-    const ANSWER_LABELS = {
-      ok: "Оформлено, відповідає промо",
-      no: "Не оформлено",
-      missing: "Товар відсутній у магазині"
-    };
+  state.stores = [...uniqueStores.values()];
+  state.employees = [
+    ...new Set(
+      (result.employees || [])
+        .map(name => String(name).trim())
+        .filter(Boolean)
+    )
+  ].sort((a,b) => a.localeCompare(b,"uk"));
 
-    const state = {
-      stores: [],
-      employees: [],
-      employee: "",
-      apid: "",
-      categories: [],
-      answers: {},
-      reportId: "",
-      submitting: false,
-      completed: false,
-      historyReturn: "selectionView"
-    };
+  fillSelect(
+    $("employeeSelect"),
+    "Оберіть співробітника",
+    state.employees,
+    name => ({label:name,value:name})
+  );
 
-    const $ = id => document.getElementById(id);
+  fillSelect(
+    $("storeSelect"),
+    "Оберіть магазин",
+    state.stores,
+    store => ({
+      label:`${store.name} | ${store.apid}`,
+      value:store.apid
+    })
+  );
 
-    function showView(id) {
-      [
-        "selectionView",
-        "checklistView",
-        "reviewView",
-        "successView",
-        "historyView"
-      ].forEach(view => {
-        $(view).classList.toggle(
-          "hidden",
-          view !== id
-        );
+  $("employeeSelect").disabled = false;
+
+  if (state.employees.includes(state.employee)) {
+    $("employeeSelect").value = state.employee;
+  }
+
+  if (state.stores.some(store => store.apid === state.apid)) {
+    $("storeSelect").value = state.apid;
+  }
+
+  updateSelection();
+}
+
+async function loadPromos() {
+  const result = await api("/promos");
+
+  if (!Array.isArray(result.categories)) {
+    throw new Error("Невірний формат промопозицій");
+  }
+
+  state.categories = result.categories;
+  updateSelection();
+}
+
+async function refreshData() {
+  if (state.submitting) return;
+
+  $("refreshBtn").disabled = true;
+  setStatus("Завантаження даних...");
+
+  try {
+    await loadDirectory();
+    await loadPromos();
+
+    setStatus(
+      `Співробітників: ${state.employees.length}. ` +
+      `Магазинів: ${state.stores.length}. ` +
+      `Промопозицій: ${allItems().length}.`
+    );
+
+    if (!$("checklistView").classList.contains("hidden")) {
+      renderChecklist();
+    }
+  } catch (error) {
+    setStatus(error.message,true);
+  } finally {
+    $("refreshBtn").disabled = false;
+  }
+}
+
+function photoList(itemId) {
+  if (!state.photos[itemId]) state.photos[itemId] = [];
+  return state.photos[itemId];
+}
+
+function releasePhoto(photo) {
+  if (photo?.url) URL.revokeObjectURL(photo.url);
+}
+
+function clearPhotos() {
+  Object.values(state.photos).forEach(list => {
+    list.forEach(releasePhoto);
+  });
+  state.photos = {};
+}
+
+function makePhotoId() {
+  return newId().replace(/-/g,"");
+}
+
+function addPhotoControls(block, itemId) {
+  const section = el("div");
+  const actions = el("div",null,"photo-actions");
+
+  const camera = el("button","📷 Зробити фото","secondary");
+  const gallery = el("button","＋ Завантажити фото","secondary");
+
+  camera.type = "button";
+  gallery.type = "button";
+
+  const cameraInput = document.createElement("input");
+  cameraInput.type = "file";
+  cameraInput.accept = "image/*";
+  cameraInput.setAttribute("capture","environment");
+  cameraInput.className = "hidden";
+
+  const galleryInput = document.createElement("input");
+  galleryInput.type = "file";
+  galleryInput.accept = "image/*";
+  galleryInput.multiple = true;
+  galleryInput.className = "hidden";
+
+  const previews = el("div",null,"photo-list");
+  const note = el("div",null,"photo-note");
+
+  function renderPhotos() {
+    previews.replaceChildren();
+
+    const list = photoList(itemId);
+
+    note.textContent =
+      `Фото: ${list.length}/${MAX_PHOTOS_PER_ITEM}. ` +
+      "Оригінали без стиснення, до 5 МБ кожен.";
+
+    camera.disabled = list.length >= MAX_PHOTOS_PER_ITEM;
+    gallery.disabled = list.length >= MAX_PHOTOS_PER_ITEM;
+
+    list.forEach((photo,index) => {
+      const card = el("div",null,"photo-card");
+      const img = document.createElement("img");
+
+      img.src = photo.url;
+      img.alt = "Фото " + (index + 1);
+
+      const remove = el("button","Видалити");
+      remove.type = "button";
+
+      remove.addEventListener("click",() => {
+        if (state.submitting) return;
+
+        releasePhoto(photo);
+        list.splice(index,1);
+        renderPhotos();
       });
 
-      window.scrollTo(0, 0);
-    }
+      card.append(img,remove);
+      previews.appendChild(card);
+    });
+  }
 
-    function setStatus(message, error = false) {
-      $("globalStatus").textContent = message;
-      $("globalStatus").className =
-        "message " + (error ? "error" : "muted");
-    }
+  function receiveFiles(files) {
+    const list = photoList(itemId);
 
-    function el(tag, text, className = "") {
-      const node = document.createElement(tag);
-
-      if (text !== undefined && text !== null) {
-        node.textContent = String(text);
+    for (const file of files) {
+      if (list.length >= MAX_PHOTOS_PER_ITEM) {
+        alert("Максимум 3 фотографії на промопозицію");
+        break;
       }
 
-      if (className) {
-        node.className = className;
+      if (!file.type.startsWith("image/")) {
+        alert("Оберіть фотографію");
+        continue;
       }
 
-      return node;
-    }
-
-    function appendText(parent, tag, text, className = "") {
-      const node = el(tag, text, className);
-      parent.appendChild(node);
-      return node;
-    }
-
-    function currentStore() {
-      return state.stores.find(
-        store => String(store.apid) === state.apid
-      );
-    }
-
-    function allItems() {
-      return state.categories.flatMap(
-        category => category.items || []
-      );
-    }
-
-    function newReportId() {
-      if (crypto.randomUUID) {
-        return crypto.randomUUID();
-      }
-
-      const bytes = new Uint8Array(16);
-      crypto.getRandomValues(bytes);
-
-      return Array.from(bytes)
-        .map(value => value.toString(16).padStart(2, "0"))
-        .join("");
-    }
-
-    async function api(path, payload = {}) {
-      const response = await fetch(API_URL + path, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ...payload,
-          initData: telegram?.initData || ""
-        })
-      });
-
-      let result;
-
-      try {
-        result = await response.json();
-      } catch {
-        throw new Error(
-          "Сервер повернув некоректну відповідь"
-        );
-      }
-
-      if (!response.ok || !result.ok) {
-        throw new Error(
-          result.error || "Помилка сервера"
-        );
-      }
-
-      return result;
-    }
-
-    function fillSelect(select, placeholder, items, mapper) {
-      select.replaceChildren(
-        new Option(placeholder, "")
-      );
-
-      items.forEach(item => {
-        const option = mapper(item);
-
-        select.add(
-          new Option(option.label, option.value)
-        );
-      });
-    }
-
-    function updateSelection() {
-      state.employee = $("employeeSelect").value;
-      state.apid = $("storeSelect").value;
-
-      $("storeSelect").disabled = !state.employee;
-
-      $("startBtn").disabled =
-        !state.employee ||
-        !state.apid ||
-        !state.categories.length;
-    }
-
-    async function loadDirectory() {
-      const result = await api("/stores");
-
-      const uniqueStores = new Map();
-
-      (result.stores || []).forEach(store => {
-        const apid = String(store.apid || "").trim();
-
-        if (apid && !uniqueStores.has(apid)) {
-          uniqueStores.set(apid, {
-            ...store,
-            apid
-          });
-        }
-      });
-
-      state.stores = [...uniqueStores.values()];
-
-      state.employees = [
-        ...new Set(
-          (result.employees || [])
-            .map(name => String(name).trim())
-            .filter(Boolean)
-        )
-      ].sort((a, b) => a.localeCompare(b, "uk"));
-
-      fillSelect(
-        $("employeeSelect"),
-        "Оберіть співробітника",
-        state.employees,
-        name => ({
-          label: name,
-          value: name
-        })
-      );
-
-      fillSelect(
-        $("storeSelect"),
-        "Оберіть магазин",
-        state.stores,
-        store => ({
-          label: `${store.name} | ${store.apid}`,
-          value: store.apid
-        })
-      );
-
-      $("employeeSelect").disabled = false;
-
-      if (state.employees.includes(state.employee)) {
-        $("employeeSelect").value = state.employee;
-      }
-
-      if (state.stores.some(
-        store => store.apid === state.apid
-      )) {
-        $("storeSelect").value = state.apid;
-      }
-
-      updateSelection();
-    }
-
-    async function loadPromos() {
-      const result = await api("/promos");
-
-      if (!Array.isArray(result.categories)) {
-        throw new Error("Невірний формат промопозицій");
-      }
-
-      state.categories = result.categories;
-
-      const validIds = new Set(
-        allItems().map(item => String(item.id))
-      );
-
-      Object.keys(state.answers).forEach(id => {
-        if (!validIds.has(id)) {
-          delete state.answers[id];
-        }
-      });
-
-      updateSelection();
-    }
-
-    async function refreshData() {
-      $("refreshBtn").disabled = true;
-      setStatus("Завантаження даних...");
-
-      try {
-        await loadDirectory();
-        await loadPromos();
-
-        setStatus(
-          `Завантажено співробітників: ${state.employees.length}. ` +
-          `Магазинів: ${state.stores.length}. ` +
-          `Промопозицій: ${allItems().length}.`
-        );
-
-        if (!$("checklistView").classList.contains("hidden")) {
-          renderChecklist();
-        }
-
-      } catch (error) {
-        setStatus(error.message, true);
-      } finally {
-        $("refreshBtn").disabled = false;
-      }
-    }
-
-    function renderChecklist() {
-      const store = currentStore();
-      const content = $("checklistContent");
-
-      content.replaceChildren();
-
-      $("checklistInfo").textContent =
-        `${store?.name || ""} | APID ${state.apid}\n` +
-        `Співробітник: ${state.employee}`;
-
-      state.categories.forEach(category => {
-        if (!category.items?.length) return;
-
-        appendText(
-          content,
-          "div",
-          category.name,
-          "category"
-        );
-
-        category.items.forEach(item => {
-          const id = String(item.id);
-          const block = el("div", null, "item");
-
-          appendText(block, "h3", item.name);
-
-          appendText(
-            block,
-            "div",
-            `Промоціна: ${item.priceLabel || "Не зазначено"}`,
-            "price"
-          );
-
-          Object.entries(ANSWER_LABELS).forEach(
-            ([value, label]) => {
-              const row = el("label", null, "choice");
-              const input = document.createElement("input");
-
-              input.type = "radio";
-              input.name = "answer_" + id;
-              input.value = value;
-              input.checked = state.answers[id] === value;
-
-              input.addEventListener("change", () => {
-                state.answers[id] = value;
-              });
-
-              row.appendChild(input);
-              row.appendChild(el("span", label));
-              block.appendChild(row);
-            }
-          );
-
-          content.appendChild(block);
-        });
-      });
-    }
-
-    function summary() {
-      const items = allItems();
-
-      return {
-        total: items.length,
-        correct: items.filter(
-          item => state.answers[String(item.id)] === "ok"
-        ).length,
-        incorrect: items.filter(
-          item => state.answers[String(item.id)] === "no"
-        ).length,
-        missing: items.filter(
-          item => state.answers[String(item.id)] === "missing"
-        ).length
-      };
-    }
-
-    function renderMetrics(container, data) {
-      container.replaceChildren();
-
-      const metrics = [
-        [data.total, "Всього позицій"],
-        [data.correct, "Правильно оформлено"],
-        [data.incorrect, "Не оформлено"],
-        [data.missing, "Товар відсутній"]
-      ];
-
-      metrics.forEach(([value, label]) => {
-        const block = el("div", null, "metric");
-
-        appendText(block, "strong", value);
-        appendText(block, "span", label);
-
-        container.appendChild(block);
-      });
-    }
-
-    function reviewReport() {
-      const data = summary();
-
-      if (!data.total) {
-        alert("Немає актуальних промопозицій");
-        return;
-      }
-
-      if (
-        data.correct + data.incorrect + data.missing !==
-        data.total
-      ) {
+      if (file.size > MAX_PHOTO_BYTES) {
         alert(
-          "Заповніть усі позиції перед переглядом результатів"
+          `Фото "${file.name}" перевищує 5 МБ. ` +
+          "Оригінал не змінено. Оберіть інше фото."
         );
-        return;
+        continue;
       }
 
-      const store = currentStore();
+      if (![
+        "image/jpeg","image/png","image/webp",
+        "image/heic","image/heif"
+      ].includes(file.type)) {
+        alert("Непідтримуваний формат: " + file.type);
+        continue;
+      }
 
-      $("reviewInfo").replaceChildren();
-
-      appendText(
-        $("reviewInfo"),
-        "p",
-        `Магазин: ${store?.name || ""} | APID ${state.apid}`
-      );
-
-      appendText(
-        $("reviewInfo"),
-        "p",
-        `Співробітник: ${state.employee}`
-      );
-
-      renderMetrics($("reviewSummary"), data);
-
-      const content = $("reviewContent");
-      content.replaceChildren();
-
-      state.categories.forEach(category => {
-        if (!category.items?.length) return;
-
-        appendText(
-          content,
-          "div",
-          category.name,
-          "category"
-        );
-
-        category.items.forEach(item => {
-          const block = el("div", null, "review-row");
-          const answer = state.answers[String(item.id)];
-
-          appendText(block, "strong", item.name);
-
-          appendText(
-            block,
-            "span",
-            ANSWER_LABELS[answer],
-            answer === "ok"
-              ? "status-ok"
-              : answer === "no"
-                ? "status-no"
-                : "status-missing"
-          );
-
-          content.appendChild(block);
-        });
-      });
-
-      $("submitStatus").textContent = "";
-      showView("reviewView");
-    }
-
-    function setReportLinks(result) {
-      const links = [
-        ["spreadsheetLink", result.spreadsheetUrl],
-        ["documentLink", result.documentUrl]
-      ];
-
-      links.forEach(([id, url]) => {
-        const link = $(id);
-
-        const valid =
-          typeof url === "string" &&
-          /^https:\/\/(docs|drive)\.google\.com\//.test(url);
-
-        link.classList.toggle("hidden", !valid);
-
-        if (valid) {
-          link.href = url;
-        } else {
-          link.removeAttribute("href");
-        }
+      list.push({
+        id: makePhotoId(),
+        file,
+        url: URL.createObjectURL(file),
+        uploaded: false
       });
     }
 
-    async function submitReport() {
-      if (state.submitting || state.completed) return;
+    renderPhotos();
+  }
 
-      if (!state.reportId) {
-        state.reportId = newReportId();
-      }
+  camera.addEventListener("click",() => cameraInput.click());
+  gallery.addEventListener("click",() => galleryInput.click());
 
-      state.submitting = true;
-      $("submitBtn").disabled = true;
-      $("backToChecklistBtn").disabled = true;
+  cameraInput.addEventListener("change",() => {
+    receiveFiles(cameraInput.files || []);
+    cameraInput.value = "";
+  });
 
-      $("submitStatus").textContent =
-        "Збереження звіту...";
+  galleryInput.addEventListener("change",() => {
+    receiveFiles(galleryInput.files || []);
+    galleryInput.value = "";
+  });
 
-      try {
-        const result = await api("/save", {
-          reportId: state.reportId,
-          apid: state.apid,
-          employee: state.employee,
-          answers: state.answers
+  actions.append(camera,gallery);
+  section.append(actions,cameraInput,galleryInput,previews,note);
+  block.appendChild(section);
+
+  renderPhotos();
+}
+
+function renderChecklist() {
+  const store = currentStore();
+  const content = $("checklistContent");
+
+  content.replaceChildren();
+
+  $("checklistInfo").textContent =
+    `${store?.name || ""} | APID ${state.apid}\n` +
+    `Співробітник: ${state.employee}`;
+
+  state.categories.forEach(category => {
+    if (!category.items?.length) return;
+
+    appendText(content,"div",category.name,"category");
+
+    category.items.forEach(item => {
+      const id = String(item.id);
+      const block = el("div",null,"item");
+
+      appendText(block,"h3",item.name);
+      appendText(
+        block,"div",
+        `Промоціна: ${item.priceLabel || "Не зазначено"}`,
+        "price"
+      );
+
+      Object.entries(ANSWER_LABELS).forEach(([value,label]) => {
+        const row = el("label",null,"choice");
+        const input = document.createElement("input");
+
+        input.type = "radio";
+        input.name = "answer_" + id;
+        input.value = value;
+        input.checked = state.answers[id] === value;
+
+        input.addEventListener("change",() => {
+          state.answers[id] = value;
         });
 
-        if (!result.saved) {
-          throw new Error(
-            "Сервер не підтвердив збереження"
-          );
-        }
+        row.append(input,el("span",label));
+        block.appendChild(row);
+      });
 
-        state.completed = true;
+      addPhotoControls(block,id);
+      content.appendChild(block);
+    });
+  });
+}
 
-        const data = result.summary || summary();
+function summary() {
+  const items = allItems();
 
-        $("successSummary").replaceChildren();
+  return {
+    total:items.length,
+    correct:items.filter(
+      item => state.answers[String(item.id)] === "ok"
+    ).length,
+    incorrect:items.filter(
+      item => state.answers[String(item.id)] === "no"
+    ).length,
+    missing:items.filter(
+      item => state.answers[String(item.id)] === "missing"
+    ).length
+  };
+}
 
-        appendText(
-          $("successSummary"),
-          "p",
-          `${currentStore()?.name || ""} | ${state.employee}`
-        );
+function renderMetrics(container,data) {
+  container.replaceChildren();
 
-        renderMetrics(
-          $("successSummary"),
-          data
-        );
+  [
+    [data.total,"Всього позицій"],
+    [data.correct,"Правильно оформлено"],
+    [data.incorrect,"Не оформлено"],
+    [data.missing,"Товар відсутній"]
+  ].forEach(([value,label]) => {
+    const block = el("div",null,"metric");
+    appendText(block,"strong",value);
+    appendText(block,"span",label);
+    container.appendChild(block);
+  });
+}
 
-        setReportLinks(result);
-        showView("successView");
+function reviewReport() {
+  const data = summary();
 
-      } catch (error) {
-        $("submitStatus").textContent =
-          "Не вдалося підтвердити збереження: " +
-          error.message +
-          ". Повторне натискання використає той самий ID звіту.";
+  if (!data.total) {
+    alert("Немає актуальних промопозицій");
+    return;
+  }
 
-        $("submitStatus").className =
-          "message error";
+  if (
+    data.correct + data.incorrect + data.missing !==
+    data.total
+  ) {
+    alert("Заповніть усі позиції перед переглядом");
+    return;
+  }
 
-      } finally {
-        state.submitting = false;
-        $("submitBtn").disabled = false;
+  $("reviewInfo").replaceChildren();
 
-        $("backToChecklistBtn").disabled =
-          state.completed;
+  appendText(
+    $("reviewInfo"),"p",
+    `Магазин: ${currentStore()?.name || ""} | APID ${state.apid}`
+  );
+
+  appendText(
+    $("reviewInfo"),"p",
+    `Співробітник: ${state.employee}`
+  );
+
+  renderMetrics($("reviewSummary"),data);
+
+  const content = $("reviewContent");
+  content.replaceChildren();
+
+  state.categories.forEach(category => {
+    if (!category.items?.length) return;
+
+    appendText(content,"div",category.name,"category");
+
+    category.items.forEach(item => {
+      const id = String(item.id);
+      const answer = state.answers[id];
+      const block = el("div",null,"review-row");
+
+      appendText(block,"strong",item.name);
+
+      appendText(
+        block,"span",ANSWER_LABELS[answer],
+        answer === "ok"
+          ? "status-ok"
+          : answer === "no"
+            ? "status-no"
+            : "status-missing"
+      );
+
+      const photos = photoList(id);
+
+      appendText(
+        block,"p",
+        `Фотографій: ${photos.length}`,
+        "muted small"
+      );
+
+      if (photos.length) {
+        const grid = el("div",null,"photo-list");
+
+        photos.forEach(photo => {
+          const img = document.createElement("img");
+          img.src = photo.url;
+          img.alt = "Фотографія промопозиції";
+          grid.appendChild(img);
+        });
+
+        block.appendChild(grid);
       }
-    }
 
-    function resetReport() {
-      state.apid = "";
-      state.answers = {};
-      state.reportId = "";
-      state.completed = false;
+      content.appendChild(block);
+    });
+  });
 
-      $("storeSelect").value = "";
-      updateSelection();
+  $("submitStatus").textContent = "";
+  showView("reviewView");
+}
 
-      showView("selectionView");
-    }
+function fileToBase64(file) {
+  return new Promise((resolve,reject) => {
+    const reader = new FileReader();
 
-    function historyLink(parent, text, url) {
-      if (
-        typeof url !== "string" ||
-        !/^https:\/\/(docs|drive)\.google\.com\//.test(url)
-      ) {
+    reader.onload = () => {
+      const result = String(reader.result || "");
+      const comma = result.indexOf(",");
+
+      if (comma < 0) {
+        reject(new Error("Не вдалося прочитати фотографію"));
         return;
       }
 
-      const link = el("a", text, "link-button");
-      link.href = url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
+      resolve(result.slice(comma + 1));
+    };
 
-      parent.appendChild(link);
+    reader.onerror = () => {
+      reject(new Error("Помилка читання фотографії"));
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function countPhotos() {
+  return Object.values(state.photos)
+    .reduce((sum,list) => sum + list.length,0);
+}
+
+async function uploadAllPhotos() {
+  const entries = Object.entries(state.photos)
+    .flatMap(([itemId,list]) =>
+      list.map(photo => ({itemId,photo}))
+    );
+
+  let uploaded = entries.filter(
+    entry => entry.photo.uploaded
+  ).length;
+
+  for (const {itemId,photo} of entries) {
+    if (photo.uploaded) continue;
+
+    $("submitStatus").textContent =
+      `Завантаження фото: ${uploaded + 1} із ${entries.length}...`;
+
+    const base64 = await fileToBase64(photo.file);
+
+    const result = await api("/uploadPhoto",{
+      reportId:state.reportId,
+      apid:state.apid,
+      employee:state.employee,
+      itemId,
+      photoId:photo.id,
+      mimeType:photo.file.type,
+      base64
+    });
+
+    if (!result.uploaded) {
+      throw new Error("Сервер не підтвердив фотографію");
     }
 
-    async function openHistory(apid = "") {
-      state.historyReturn = state.completed
-        ? "successView"
-        : "selectionView";
+    photo.uploaded = true;
+    uploaded++;
+  }
+}
 
-      showView("historyView");
+function setReportLink(url) {
+  const link = $("documentLink");
 
-      const content = $("historyContent");
+  const valid =
+    typeof url === "string" &&
+    /^https:\/\/docs\.google\.com\//.test(url);
 
-      content.replaceChildren(
-        el("p", "Завантаження історії...", "muted")
-      );
+  link.classList.toggle("hidden",!valid);
 
-      $("historyStoreBtn").disabled = !state.apid;
+  if (valid) link.href = url;
+  else link.removeAttribute("href");
+}
 
-      try {
-        const result = await api("/history", { apid });
+async function submitReport() {
+  if (state.submitting || state.completed) return;
 
-        content.replaceChildren();
+  if (!state.reportId) {
+    state.reportId = newId();
+  }
 
-        if (!result.history?.length) {
-          appendText(
-            content,
-            "p",
-            "Завершених звітів не знайдено.",
-            "muted"
-          );
-        }
+  state.submitting = true;
 
-        (result.history || []).forEach(report => {
-          const block = el("div", null, "history-row");
+  $("submitBtn").disabled = true;
+  $("backToChecklistBtn").disabled = true;
+  $("refreshBtn").disabled = true;
 
-          appendText(
-            block,
-            "h3",
-            report.store || report.apid
-          );
-
-          appendText(
-            block,
-            "p",
-            `${report.date} | ${report.employee}`,
-            "muted small"
-          );
-
-          appendText(
-            block,
-            "p",
-            `Правильно: ${report.correct}; ` +
-            `Не оформлено: ${report.incorrect}; ` +
-            `Товар відсутній: ${report.missing}`
-          );
-
-          appendText(
-            block,
-            "p",
-            report.status || ""
-          );
-
-          historyLink(
-            block,
-            "Переглянути Google Docs",
-            report.documentUrl
-          );
-
-          content.appendChild(block);
-        });
-
-        const link = $("historySpreadsheetLink");
-
-        if (
-          typeof result.spreadsheetUrl === "string" &&
-          /^https:\/\/docs\.google\.com\//.test(
-            result.spreadsheetUrl
-          )
-        ) {
-          link.href = result.spreadsheetUrl;
-          link.classList.remove("hidden");
-        } else {
-          link.classList.add("hidden");
-        }
-
-      } catch (error) {
-        content.replaceChildren(
-          el("p", error.message, "error")
-        );
-      }
+  try {
+    if (countPhotos()) {
+      await uploadAllPhotos();
     }
 
-    $("employeeSelect").addEventListener(
-      "change",
-      () => {
-        $("storeSelect").value = "";
-        updateSelection();
-      }
+    $("submitStatus").textContent = "Збереження звіту...";
+
+    const result = await api("/save",{
+      reportId:state.reportId,
+      apid:state.apid,
+      employee:state.employee,
+      answers:state.answers
+    });
+
+    if (!result.saved) {
+      throw new Error("Сервер не підтвердив збереження");
+    }
+
+    state.completed = true;
+
+    $("successSummary").replaceChildren();
+
+    appendText(
+      $("successSummary"),"p",
+      `${currentStore()?.name || ""} | ${state.employee}`
     );
 
-    $("storeSelect").addEventListener(
-      "change",
-      updateSelection
+    renderMetrics(
+      $("successSummary"),
+      result.summary || summary()
     );
 
-    $("refreshBtn").addEventListener(
-      "click",
-      refreshData
-    );
+    setReportLink(result.documentUrl);
+    showView("successView");
 
-    $("startBtn").addEventListener(
-      "click",
-      () => {
-        state.answers = {};
-        state.reportId = "";
-        state.completed = false;
+    clearPhotos();
 
-        renderChecklist();
-        showView("checklistView");
-      }
-    );
+  } catch (error) {
+    $("submitStatus").textContent =
+      "Не вдалося завершити звіт: " + error.message +
+      "\nПеревірте з'єднання та натисніть «Надіслати звіт» повторно.";
 
-    $("backToSelectionBtn").addEventListener(
-      "click",
-      () => showView("selectionView")
-    );
+    $("submitStatus").className = "message error";
+  } finally {
+    state.submitting = false;
+    $("submitBtn").disabled = state.completed;
+    $("backToChecklistBtn").disabled = state.completed;
+    $("refreshBtn").disabled = false;
+  }
+}
 
-    $("reviewBtn").addEventListener(
-      "click",
-      reviewReport
-    );
+function resetReport() {
+  clearPhotos();
 
-    $("backToChecklistBtn").addEventListener(
-      "click",
-      () => {
-        renderChecklist();
-        showView("checklistView");
-      }
-    );
+  state.apid = "";
+  state.answers = {};
+  state.reportId = "";
+  state.completed = false;
 
-    $("submitBtn").addEventListener(
-      "click",
-      submitReport
-    );
+  $("storeSelect").value = "";
+  updateSelection();
+  showView("selectionView");
+}
 
-    $("newReportBtn").addEventListener(
-      "click",
-      resetReport
-    );
+$("employeeSelect").addEventListener("change",() => {
+  $("storeSelect").value = "";
+  updateSelection();
+});
 
-    $("openHistoryBtn").addEventListener(
-      "click",
-      () => openHistory()
-    );
+$("storeSelect").addEventListener("change",updateSelection);
+$("refreshBtn").addEventListener("click",refreshData);
 
-    $("successHistoryBtn").addEventListener(
-      "click",
-      () => openHistory()
-    );
+$("startBtn").addEventListener("click",() => {
+  clearPhotos();
 
-    $("historyAllBtn").addEventListener(
-      "click",
-      () => openHistory()
-    );
+  state.answers = {};
+  state.reportId = newId();
+  state.completed = false;
 
-    $("historyStoreBtn").addEventListener(
-      "click",
-      () => openHistory(state.apid)
-    );
+  renderChecklist();
+  showView("checklistView");
+});
 
-    $("historyBackBtn").addEventListener(
-      "click",
-      () => showView(state.historyReturn)
-    );
+$("backToSelectionBtn").addEventListener("click",() => {
+  if (countPhotos() || Object.keys(state.answers).length) {
+    if (!confirm("Повернутися? Незавершені відповіді та фото буде втрачено.")) {
+      return;
+    }
+  }
 
-    refreshData();
-  </script>
+  clearPhotos();
+  state.answers = {};
+  state.reportId = "";
+  showView("selectionView");
+});
+
+$("reviewBtn").addEventListener("click",reviewReport);
+
+$("backToChecklistBtn").addEventListener("click",() => {
+  renderChecklist();
+  showView("checklistView");
+});
+
+$("submitBtn").addEventListener("click",submitReport);
+$("newReportBtn").addEventListener("click",resetReport);
+
+refreshData();
+</script>
 </body>
 </html>
