@@ -1,0 +1,474 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>Apple Promo Control Test</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 14px;
+      background: #f7f7f8;
+      color: #171717;
+      font-family: -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: auto;
+      padding: 18px;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #eee;
+    }
+
+    h1 { font-size: 21px; margin: 0 0 5px; }
+    h2 { font-size: 19px; margin: 26px 0 14px; }
+
+    .subtitle, .price, .hint {
+      color: #686868;
+    }
+
+    .subtitle { font-size: 15px; }
+    .price { margin: 8px 0 12px; }
+    .hint { font-size: 13px; margin-top: 12px; }
+
+    button, select {
+      font: inherit;
+      border-radius: 12px;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: 1px solid #d5d5d5;
+      background: white;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .refresh { white-space: nowrap; }
+
+    .primary {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin-top: 20px;
+      background: #171717;
+      color: white;
+      border-color: #171717;
+    }
+
+    .field {
+      display: block;
+      font-weight: 600;
+      margin: 20px 0 8px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      background: white;
+    }
+
+    .product {
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .product-name {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .choice {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 0;
+      cursor: pointer;
+    }
+
+    .choice input {
+      width: 20px;
+      height: 20px;
+      accent-color: #171717;
+    }
+
+    .message {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .error { color: #bd2828; }
+    .hidden { display: none; }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <div class="header">
+      <div>
+        <h1>Актуальні промо</h1>
+        <div class="subtitle" id="storeTitle">
+          Apple Promo Control Test
+        </div>
+      </div>
+
+      <button class="refresh" id="refreshBtn"
+              disabled onclick="loadPromos()">
+        ↻ Оновити
+      </button>
+    </div>
+
+    <section id="setup">
+      <label class="field" for="employee">
+        Співробітник
+      </label>
+      <select id="employee">
+        <option value="">Оберіть співробітника</option>
+      </select>
+
+      <label class="field" for="store">
+        Магазин
+      </label>
+      <select id="store" disabled>
+        <option value="">Оберіть магазин</option>
+      </select>
+
+      <button class="primary" id="startBtn"
+              disabled onclick="loadPromos()">
+        Ознайомитися з актуальними промо
+      </button>
+    </section>
+
+    <div id="message" class="message"
+         role="status"></div>
+
+    <section id="checklist" class="hidden">
+      <div id="categories"></div>
+
+      <button class="primary" id="saveBtn" disabled>
+        Зберегти перевірку
+      </button>
+
+      <p class="hint">
+        Збереження звітів підключимо після
+        перевірки завантаження промо.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    // Сюди додамо адресу Cloudflare Worker.
+    const API_URL = "PASTE_WORKER_URL_HERE";
+
+    const telegram = window.Telegram?.WebApp;
+    telegram?.ready();
+    telegram?.expand();
+
+    const state = {
+      stores: [],
+      employee: "",
+      apid: "",
+      categories: [],
+      answers: {}
+    };
+
+    const el = id => document.getElementById(id);
+
+    function showMessage(text, error = false) {
+      el("message").textContent = text;
+      el("message").className =
+        "message" + (error ? " error" : "");
+    }
+
+    function createOption(value, text) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = text;
+      return option;
+    }
+
+    async function request(path, payload = {}) {
+      if (API_URL === "PASTE_WORKER_URL_HERE") {
+        throw new Error(
+          "Cloudflare Worker ще не підключено."
+        );
+      }
+
+      const response = await fetch(
+        API_URL.replace(/\/$/, "") + path,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            initData: telegram?.initData || "",
+            ...payload
+          })
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        throw new Error(
+          result.error || "Помилка сервера"
+        );
+      }
+
+      return result;
+    }
+
+    async function loadStores() {
+      try {
+        showMessage("Завантаження магазинів...");
+
+        const result = await request("/stores");
+
+        if (!Array.isArray(result.stores)) {
+          throw new Error("Некоректний довідник");
+        }
+
+        state.stores = result.stores;
+
+        const employees = [...new Set(
+          state.stores
+            .map(store => store.employee)
+            .filter(Boolean)
+        )].sort();
+
+        const select = el("employee");
+
+        employees.forEach(name => {
+          select.appendChild(
+            createOption(name, name)
+          );
+        });
+
+        showMessage("Оберіть співробітника.");
+      } catch (error) {
+        showMessage(error.message, true);
+      }
+    }
+
+    el("employee").addEventListener(
+      "change",
+      function () {
+        state.employee = this.value;
+        state.apid = "";
+
+        const select = el("store");
+
+        select.replaceChildren(
+          createOption("", "Оберіть магазин")
+        );
+
+        state.stores
+          .filter(store =>
+            store.employee === state.employee
+          )
+          .forEach(store => {
+            select.appendChild(
+              createOption(
+                String(store.apid),
+                store.name
+              )
+            );
+          });
+
+        select.disabled = !state.employee;
+        el("startBtn").disabled = true;
+      }
+    );
+
+    el("store").addEventListener(
+      "change",
+      function () {
+        state.apid = this.value;
+        el("startBtn").disabled = !state.apid;
+      }
+    );
+
+    async function loadPromos() {
+      if (!state.apid) return;
+
+      el("refreshBtn").disabled = true;
+      el("startBtn").disabled = true;
+
+      try {
+        showMessage("Завантаження актуальних промо...");
+
+        const result = await request(
+          "/promos",
+          { apid: state.apid }
+        );
+
+        if (!Array.isArray(result.categories)) {
+          throw new Error("Некоректний список промо");
+        }
+
+        state.categories = result.categories;
+
+        const currentIds = new Set(
+          state.categories.flatMap(category =>
+            category.items.map(item => String(item.id))
+          )
+        );
+
+        Object.keys(state.answers).forEach(id => {
+          if (!currentIds.has(id)) {
+            delete state.answers[id];
+          }
+        });
+
+        const store = state.stores.find(
+          item => String(item.apid) === state.apid
+        );
+
+        el("storeTitle").textContent =
+          store?.name || state.apid;
+
+        el("setup").classList.add("hidden");
+        el("checklist").classList.remove("hidden");
+
+        renderPromos();
+
+        showMessage(
+          "Актуальні промо завантажено."
+        );
+      } catch (error) {
+        showMessage(error.message, true);
+      } finally {
+        el("refreshBtn").disabled = false;
+        el("startBtn").disabled = false;
+      }
+    }
+
+    function renderPromos() {
+      const container = el("categories");
+      container.replaceChildren();
+
+      state.categories.forEach(category => {
+        if (!category.items?.length) return;
+
+        const section = document.createElement("section");
+
+        const title = document.createElement("h2");
+        title.textContent = category.name;
+        section.appendChild(title);
+
+        category.items.forEach(item => {
+          const product = document.createElement("div");
+          product.className = "product";
+
+          const name = document.createElement("div");
+          name.className = "product-name";
+          name.textContent = item.name;
+
+          const price = document.createElement("div");
+          price.className = "price";
+          price.textContent =
+            "Промоціна: " + item.priceLabel;
+
+          product.append(name, price);
+
+          const choices = [
+            ["ok", "Оформлено, відповідає промо"],
+            ["no", "Не оформлено"],
+            ["missing", "Товар відсутній у магазині"]
+          ];
+
+          choices.forEach(([value, label]) => {
+            const row = document.createElement("label");
+            row.className = "choice";
+
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "promo_" + item.id;
+            radio.value = value;
+
+            radio.checked =
+              state.answers[item.id] === value;
+
+            radio.addEventListener("change", () => {
+              state.answers[item.id] = value;
+              updateSaveButton();
+            });
+
+            row.append(
+              radio,
+              document.createTextNode(label)
+            );
+
+            product.appendChild(row);
+          });
+
+          section.appendChild(product);
+        });
+
+        container.appendChild(section);
+      });
+
+      updateSaveButton();
+    }
+
+    function updateSaveButton() {
+      const items = state.categories.flatMap(
+        category => category.items
+      );
+
+      const complete =
+        items.length > 0 &&
+        items.every(item => state.answers[item.id]);
+
+      // Увімкнемо після реалізації
+      // серверного збереження звітів.
+      el("saveBtn").disabled = true;
+
+      if (complete) {
+        showMessage(
+          "Усі позиції перевірено. " +
+          "Наступний етап — збереження звіту."
+        );
+      }
+    }
+
+    showMessage(
+      "Інтерфейс готовий. " +
+      "Очікується підключення сервера."
+    );
+
+    if (API_URL !== "PASTE_WORKER_URL_HERE") {
+      loadStores();
+    }
+  </script>
+</body>
+</html>
