@@ -148,6 +148,7 @@
       <label class="field" for="employee">
         Співробітник
       </label>
+
       <select id="employee">
         <option value="">Оберіть співробітника</option>
       </select>
@@ -155,6 +156,7 @@
       <label class="field" for="store">
         Магазин
       </label>
+
       <select id="store" disabled>
         <option value="">Оберіть магазин</option>
       </select>
@@ -180,13 +182,14 @@
         перевірки завантаження промо.
       </p>
     </section>
+
   </main>
 
   <script>
     "use strict";
 
-    // Сюди додамо адресу Cloudflare Worker.
-    const API_URL = "https://apple-promo-control-test.nass-mess53.workers.dev";
+    const API_URL =
+      "https://apple-promo-control-test.nass-mess53.workers.dev";
 
     const telegram = window.Telegram?.WebApp;
     telegram?.ready();
@@ -194,6 +197,7 @@
 
     const state = {
       stores: [],
+      employees: [],
       employee: "",
       apid: "",
       categories: [],
@@ -216,12 +220,6 @@
     }
 
     async function request(path, payload = {}) {
-      if (API_URL === "PASTE_WORKER_URL_HERE") {
-        throw new Error(
-          "Cloudflare Worker ще не підключено."
-        );
-      }
-
       const response = await fetch(
         API_URL.replace(/\/$/, "") + path,
         {
@@ -236,9 +234,17 @@
         }
       );
 
-      const result = await response.json();
+      let result;
 
-      if (!response.ok || result.error) {
+      try {
+        result = await response.json();
+      } catch (error) {
+        throw new Error(
+          "Сервер повернув некоректну відповідь."
+        );
+      }
+
+      if (!response.ok || result.ok === false || result.error) {
         throw new Error(
           result.error || "Помилка сервера"
         );
@@ -249,31 +255,48 @@
 
     async function loadStores() {
       try {
-        showMessage("Завантаження магазинів...");
+        showMessage("Завантаження співробітників і магазинів...");
 
         const result = await request("/stores");
 
         if (!Array.isArray(result.stores)) {
-          throw new Error("Некоректний довідник");
+          throw new Error("Некоректний довідник магазинів");
         }
 
         state.stores = result.stores;
 
-        const employees = [...new Set(
-          state.stores
-            .map(store => store.employee)
+        const employees = Array.isArray(result.employees)
+          ? result.employees
+          : state.stores.map(store => store.employee);
+
+        state.employees = [...new Set(
+          employees
+            .map(name => String(name || "").trim())
             .filter(Boolean)
-        )].sort();
+        )].sort((a, b) => a.localeCompare(b, "uk"));
 
         const select = el("employee");
 
-        employees.forEach(name => {
+        select.replaceChildren(
+          createOption("", "Оберіть співробітника")
+        );
+
+        state.employees.forEach(name => {
           select.appendChild(
             createOption(name, name)
           );
         });
 
-        showMessage("Оберіть співробітника.");
+        const storeCount = new Set(
+          state.stores.map(store => String(store.apid))
+        ).size;
+
+        showMessage(
+          "Завантажено співробітників: " +
+          state.employees.length +
+          ". Магазинів: " + storeCount + "."
+        );
+
       } catch (error) {
         showMessage(error.message, true);
       }
@@ -291,9 +314,19 @@
           createOption("", "Оберіть магазин")
         );
 
-        state.stores
-          .filter(store =>
-            store.employee === state.employee
+        const uniqueStores = new Map();
+
+        state.stores.forEach(store => {
+          const apid = String(store.apid || "").trim();
+
+          if (apid && !uniqueStores.has(apid)) {
+            uniqueStores.set(apid, store);
+          }
+        });
+
+        [...uniqueStores.values()]
+          .sort((a, b) =>
+            a.name.localeCompare(b.name, "uk")
           )
           .forEach(store => {
             select.appendChild(
@@ -313,12 +346,13 @@
       "change",
       function () {
         state.apid = this.value;
-        el("startBtn").disabled = !state.apid;
+        el("startBtn").disabled =
+          !state.apid || !state.employee;
       }
     );
 
     async function loadPromos() {
-      if (!state.apid) return;
+      if (!state.apid || !state.employee) return;
 
       el("refreshBtn").disabled = true;
       el("startBtn").disabled = true;
@@ -328,7 +362,10 @@
 
         const result = await request(
           "/promos",
-          { apid: state.apid }
+          {
+            apid: state.apid,
+            employee: state.employee
+          }
         );
 
         if (!Array.isArray(result.categories)) {
@@ -339,7 +376,7 @@
 
         const currentIds = new Set(
           state.categories.flatMap(category =>
-            category.items.map(item => String(item.id))
+            (category.items || []).map(item => String(item.id))
           )
         );
 
@@ -361,9 +398,8 @@
 
         renderPromos();
 
-        showMessage(
-          "Актуальні промо завантажено."
-        );
+        showMessage("Актуальні промо завантажено.");
+
       } catch (error) {
         showMessage(error.message, true);
       } finally {
@@ -442,15 +478,14 @@
 
     function updateSaveButton() {
       const items = state.categories.flatMap(
-        category => category.items
+        category => category.items || []
       );
 
       const complete =
         items.length > 0 &&
         items.every(item => state.answers[item.id]);
 
-      // Увімкнемо після реалізації
-      // серверного збереження звітів.
+      // Збереження звітів підключимо окремо.
       el("saveBtn").disabled = true;
 
       if (complete) {
@@ -461,14 +496,8 @@
       }
     }
 
-    showMessage(
-      "Інтерфейс готовий. " +
-      "Очікується підключення сервера."
-    );
-
-    if (API_URL !== "PASTE_WORKER_URL_HERE") {
-      loadStores();
-    }
+    showMessage("Підключення до сервера...");
+    loadStores();
   </script>
 </body>
 </html>
